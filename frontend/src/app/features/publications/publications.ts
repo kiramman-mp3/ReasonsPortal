@@ -41,7 +41,7 @@ export interface Publication {
       <div class="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-premium p-4">
         <div class="relative flex items-center">
           <i class="bi bi-search absolute left-4 text-slate-400 text-lg"></i>
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por título, resumen o autor..." 
+          <input #search type="text" [value]="searchQuery()" (input)="searchQuery.set(search.value)" placeholder="Buscar por título, resumen o autor..." 
                  class="w-full bg-slate-50 border-0 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium placeholder-slate-400 transition-all">
         </div>
       </div>
@@ -207,11 +207,11 @@ export class PublicationsComponent implements OnInit {
   publications = signal<Publication[]>([]);
   selectedPublication = signal<Publication | null>(null);
   isLoading = signal(true);
-  searchQuery = '';
+  searchQuery = signal<string>('');
 
   // Filtro de Búsqueda
   filteredPublications = computed(() => {
-    const query = this.searchQuery.toLowerCase().trim();
+    const query = this.searchQuery().toLowerCase().trim();
     if (!query) return this.publications();
     return this.publications().filter(p => 
       p.title.toLowerCase().includes(query) || 

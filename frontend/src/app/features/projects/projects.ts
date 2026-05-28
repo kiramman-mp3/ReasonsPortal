@@ -45,25 +45,11 @@ export interface Project {
         <div class="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-premium p-4">
           <div class="relative flex items-center">
             <i class="bi bi-search absolute left-4 text-slate-400 text-lg"></i>
-            <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por título o palabras clave..." 
+            <input #search type="text" [value]="searchQuery()" (input)="searchQuery.set(search.value)" placeholder="Buscar por título o palabras clave..." 
                    class="w-full bg-slate-50 border-0 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium placeholder-slate-400 transition-all">
           </div>
         </div>
 
-        <!-- Filtros por Eje Temático (Chips) -->
-        <div class="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
-          <button (click)="selectedAxisId.set(null)" 
-                  [ngClass]="selectedAxisId() === null ? 'bg-primary text-white shadow-md scale-105' : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 hover:border-slate-300'"
-                  class="px-4 py-2.5 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer shadow-sm">
-            Todos los Proyectos
-          </button>
-          <button *ngFor="let axis of config.settings()?.research_lines" 
-                  (click)="selectedAxisId.set(axis.id)"
-                  [ngClass]="selectedAxisId() === axis.id ? 'bg-primary text-white shadow-md scale-105' : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 hover:border-slate-300'"
-                  class="px-4 py-2.5 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer shadow-sm max-w-xs truncate">
-            {{ axis.title.split(',')[0] }}
-          </button>
-        </div>
       </div>
 
       <!-- Spinner de Carga -->
@@ -219,23 +205,14 @@ export class ProjectsComponent implements OnInit {
 
   projects = signal<Project[]>([]);
   selectedProject = signal<Project | null>(null);
-  selectedAxisId = signal<number | null>(null);
   isLoading = signal(true);
-  searchQuery = '';
+  searchQuery = signal<string>('');
 
   // Filtro reactivo en base a señales y computeds
   filteredProjects = computed(() => {
-    const query = this.searchQuery.toLowerCase().trim();
-    const axisId = this.selectedAxisId();
-    
+    const query = this.searchQuery().toLowerCase().trim();
     let list = this.projects();
     
-    // 1. Filtrar por Eje Temático si hay uno seleccionado
-    if (axisId !== null) {
-      list = list.filter(p => p.research_line_id === axisId);
-    }
-    
-    // 2. Filtrar por texto
     if (!query) return list;
     return list.filter(p => 
       p.title.toLowerCase().includes(query) || 

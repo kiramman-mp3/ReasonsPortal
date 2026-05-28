@@ -5,6 +5,8 @@ import { firstValueFrom } from 'rxjs';
 export interface SiteSettings {
   id: number;
   logo_url: string;
+  purpose_image_url?: string;
+  cta_image_url?: string;
   group_name: string;
   institution: string;
   description: string;
@@ -38,8 +40,16 @@ export class ConfigService {
     const url = this.settings()?.logo_url || 'uploads/logo_reasons.png';
     return `/${url}`;
   });
+  purposeImageUrl = computed(() => {
+    const url = this.settings()?.purpose_image_url || 'uploads/sustainability_research.png';
+    return `/${url}`;
+  });
+  ctaImageUrl = computed(() => {
+    const url = this.settings()?.cta_image_url || 'uploads/team_collaboration.png';
+    return `/${url}`;
+  });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Cargar configuración de forma síncrona/inicial en el arranque de la app
   async loadConfig(): Promise<void> {
@@ -58,6 +68,8 @@ export class ConfigService {
       const fallback: SiteSettings = {
         id: 1,
         logo_url: 'uploads/logo_reasons.png',
+        purpose_image_url: 'uploads/sustainability_research.png',
+        cta_image_url: 'uploads/team_collaboration.png',
         group_name: 'REASONS',
         institution: 'Universidad Técnica de Ambato',
         description: 'Grupo de investigación que impulsa soluciones innovadoras en ingeniería con un enfoque de sostenibilidad y compromiso social.',

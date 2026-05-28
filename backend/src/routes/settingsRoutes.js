@@ -79,6 +79,22 @@ router.post(
   settingsController.updateLogo
 );
 
+// POST /api/settings/purpose-image (Privado)
+router.post(
+  '/purpose-image',
+  authMiddleware,
+  upload.single('image'),
+  settingsController.updatePurposeImage
+);
+
+// POST /api/settings/cta-image (Privado)
+router.post(
+  '/cta-image',
+  authMiddleware,
+  upload.single('image'),
+  settingsController.updateCtaImage
+);
+
 // Gestión del Carrusel del Hero (Privado)
 // POST /api/settings/slides (Agregar diapositiva)
 router.post(

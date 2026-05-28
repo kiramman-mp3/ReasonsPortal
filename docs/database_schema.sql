@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS site_settings (
     primary_color VARCHAR(7) DEFAULT '#0A5C36', -- Verde institucional de la UTA
     secondary_color VARCHAR(7) DEFAULT '#F4A261', -- Color secundario (Sostenibilidad)
     accent_color VARCHAR(7) DEFAULT '#1D3557', -- Color de realce
+    purpose_image_url VARCHAR(255) DEFAULT 'uploads/sustainability_research.png',
+    cta_image_url VARCHAR(255) DEFAULT 'uploads/team_collaboration.png',
     contact_address VARCHAR(255) NOT NULL,
     contact_location VARCHAR(255) NOT NULL,
     contact_email VARCHAR(150) NOT NULL,
@@ -145,10 +147,12 @@ CREATE TABLE IF NOT EXISTS hero_slides (
 -- =========================================================================
 
 -- Inserción inicial de configuración de REASONS
-INSERT INTO site_settings (id, logo_url, group_name, institution, description, objective_general, mission, vision, primary_color, secondary_color, accent_color, contact_address, contact_location, contact_email)
+INSERT INTO site_settings (id, logo_url, purpose_image_url, cta_image_url, group_name, institution, description, objective_general, mission, vision, primary_color, secondary_color, accent_color, contact_address, contact_location, contact_email)
 VALUES (
     1, 
     'uploads/logo_reasons.png', 
+    'uploads/sustainability_research.png',
+    'uploads/team_collaboration.png',
     'REASONS', 
     'Universidad Técnica de Ambato',
     'Grupo de investigación que impulsa soluciones innovadoras en ingeniería con un enfoque de sostenibilidad y compromiso social.',

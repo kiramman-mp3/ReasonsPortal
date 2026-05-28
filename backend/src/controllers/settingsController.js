@@ -191,6 +191,92 @@ exports.updateLogo = async (req, res) => {
   }
 };
 
+// Actualizar imagen de la sección de Propósito
+exports.updatePurposeImage = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'No se subió ningún archivo de imagen para la sección de propósito.'
+    });
+  }
+
+  try {
+    const newPurposeImageUrl = 'uploads/' + req.file.filename;
+
+    // 1. Obtener imagen antigua para borrarla físicamente
+    const [settingsRows] = await pool.query('SELECT purpose_image_url FROM site_settings WHERE id = 1');
+    if (settingsRows.length > 0) {
+      const oldImageUrl = settingsRows[0].purpose_image_url;
+      // Borrar el archivo viejo si no es el de por defecto y si existe
+      if (oldImageUrl && oldImageUrl !== 'uploads/sustainability_research.png') {
+        const oldPath = path.join(__dirname, '../../', oldImageUrl);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+    }
+
+    // 2. Actualizar base de datos
+    await pool.query('UPDATE site_settings SET purpose_image_url = ? WHERE id = 1', [newPurposeImageUrl]);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Imagen de propósito actualizada exitosamente.',
+      purpose_image_url: newPurposeImageUrl
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar imagen de propósito:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno al actualizar la imagen de propósito.'
+    });
+  }
+};
+
+// Actualizar imagen de la sección de Colaboración (CTA)
+exports.updateCtaImage = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'No se subió ningún archivo de imagen para la sección de colaboración.'
+    });
+  }
+
+  try {
+    const newCtaImageUrl = 'uploads/' + req.file.filename;
+
+    // 1. Obtener imagen antigua para borrarla físicamente
+    const [settingsRows] = await pool.query('SELECT cta_image_url FROM site_settings WHERE id = 1');
+    if (settingsRows.length > 0) {
+      const oldImageUrl = settingsRows[0].cta_image_url;
+      // Borrar el archivo viejo si no es el de por defecto y si existe
+      if (oldImageUrl && oldImageUrl !== 'uploads/team_collaboration.png') {
+        const oldPath = path.join(__dirname, '../../', oldImageUrl);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+    }
+
+    // 2. Actualizar base de datos
+    await pool.query('UPDATE site_settings SET cta_image_url = ? WHERE id = 1', [newCtaImageUrl]);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Imagen de colaboración actualizada exitosamente.',
+      cta_image_url: newCtaImageUrl
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar imagen de colaboración:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno al actualizar la imagen de colaboración.'
+    });
+  }
+};
+
 // Agregar nueva diapositiva al carrusel
 exports.addSlide = async (req, res) => {
   if (!req.file) {
@@ -251,7 +337,7 @@ exports.updateSlide = async (req, res) => {
     // Si se sube una nueva imagen, reemplazar y borrar la anterior
     if (req.file) {
       imageUrl = 'uploads/' + req.file.filename;
-      
+
       const oldImage = slide.image_url;
       // No borrar las imágenes por defecto del semillero original
       const defaultImages = [

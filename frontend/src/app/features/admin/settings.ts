@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
@@ -181,10 +181,71 @@ import { compressImage } from '../../core/utils/image-compressor';
                        class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80 file:cursor-pointer">
                 <p class="text-[10px] text-slate-400">Se recomiendan imágenes PNG transparentes cuadradas de hasta 2MB.</p>
                 
-                <button type="button" *ngIf="selectedLogoFile" (click)="uploadLogo()" [disabled]="isUploadingLogo()"
+                <button type="button" *ngIf="selectedLogoFile()" (click)="uploadLogo()" [disabled]="isUploadingLogo()"
                         class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-xs font-bold rounded-lg shadow transition-all">
                   {{ isUploadingLogo() ? 'Subiendo...' : 'Confirmar Subida de Logo' }}
                 </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SECCIÓN IMÁGENES ILUSTRATIVAS DE INICIO (HOME) -->
+          <div class="space-y-6 pt-6 border-t border-slate-100">
+            <h3 class="text-slate-800 font-bold text-sm uppercase tracking-wider">Imágenes Ilustrativas de la Página de Inicio</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              <!-- Imagen de la Sección de Propósito -->
+              <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4 flex flex-col justify-between">
+                <div class="space-y-2">
+                  <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block">Imagen de Propósito (Misión/Visión)</span>
+                  <p class="text-slate-400 text-[10px]">Renderiza a la izquierda de la sección de visión general del grupo en el Home público.</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                  <!-- Vista previa actual -->
+                  <div class="w-24 h-24 bg-white border border-slate-200/50 rounded-xl flex items-center justify-center p-1.5 shadow-sm overflow-hidden flex-shrink-0">
+                    <img [src]="config.purposeImageUrl()" alt="Propósito Actual" class="w-full h-full object-cover rounded-lg">
+                  </div>
+                  
+                  <!-- Controles de subida -->
+                  <div class="space-y-2 flex-grow">
+                    <input type="file" (change)="onPurposeFileSelected($event)" accept="image/*" 
+                           class="block w-full text-[10px] text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80 file:cursor-pointer">
+                    
+                    <button type="button" *ngIf="selectedPurposeFile()" (click)="uploadPurposeImage()" [disabled]="isUploadingPurpose()"
+                            class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[10px] font-bold rounded-lg shadow transition-all">
+                      {{ isUploadingPurpose() ? 'Subiendo...' : 'Confirmar Imagen Propósito' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Imagen de la Sección de Colaboración -->
+              <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4 flex flex-col justify-between">
+                <div class="space-y-2">
+                  <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block">Imagen de Colaboración (Llamado a la Acción)</span>
+                  <p class="text-slate-400 text-[10px]">Ilustra el marco inferior de invitación para contacto profesional y colaboración en el Home.</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                  <!-- Vista previa actual -->
+                  <div class="w-24 h-24 bg-white border border-slate-200/50 rounded-xl flex items-center justify-center p-1.5 shadow-sm overflow-hidden flex-shrink-0">
+                    <img [src]="config.ctaImageUrl()" alt="Colaboración Actual" class="w-full h-full object-cover rounded-lg">
+                  </div>
+                  
+                  <!-- Controles de subida -->
+                  <div class="space-y-2 flex-grow">
+                    <input type="file" (change)="onCtaFileSelected($event)" accept="image/*" 
+                           class="block w-full text-[10px] text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-primary-light file:text-primary hover:file:bg-primary-light/80 file:cursor-pointer">
+                    
+                    <button type="button" *ngIf="selectedCtaFile()" (click)="uploadCtaImage()" [disabled]="isUploadingCta()"
+                            class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[10px] font-bold rounded-lg shadow transition-all">
+                      {{ isUploadingCta() ? 'Subiendo...' : 'Confirmar Imagen Colaboración' }}
+                    </button>
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -405,7 +466,7 @@ import { compressImage } from '../../core/utils/image-compressor';
           </div>
 
           <div class="flex justify-end pt-2">
-            <button type="button" (click)="addSlide()" [disabled]="isAddingSlide() || !selectedSlideFile"
+            <button type="button" (click)="addSlide()" [disabled]="isAddingSlide() || !selectedSlideFile()"
                     class="px-6 py-3 bg-primary hover:bg-primary-hover disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow transition-all flex items-center space-x-1.5 cursor-pointer">
               <i *ngIf="isAddingSlide()" class="animate-spin bi bi-arrow-repeat text-sm"></i>
               <span>{{ isAddingSlide() ? 'Cargando Diapositiva...' : 'Agregar Nueva Diapositiva' }}</span>
@@ -430,19 +491,32 @@ export class AdminSettingsComponent implements OnInit {
   messageStatus = signal<'idle' | 'success' | 'error'>('idle');
   statusMessage = signal('');
 
-  selectedLogoFile: File | null = null;
+  constructor() {
+    effect(() => {
+      const s = this.config.settings();
+      if (s) {
+        this.populateForm();
+      }
+    });
+  }
+
+  selectedLogoFile = signal<File | null>(null);
+  selectedPurposeFile = signal<File | null>(null);
+  selectedCtaFile = signal<File | null>(null);
+  isUploadingPurpose = signal(false);
+  isUploadingCta = signal(false);
 
   // NUEVAS SEÑALES Y PROPIEDADES PARA EL CARRUSEL
   slides = computed(() => this.config.settings()?.hero_slides || []);
-  
+
   newSlideTitle = signal('');
   newSlideSubtitle = signal('');
   newSlideOrder = signal(0);
-  selectedSlideFile: File | null = null;
-  
+  selectedSlideFile = signal<File | null>(null);
+
   isAddingSlide = signal(false);
   selectedEditFiles: { [id: number]: File } = {};
-  
+
   updatingSlideIds = signal<{ [id: number]: boolean }>({});
   deletingSlideIds = signal<{ [id: number]: boolean }>({});
 
@@ -555,23 +629,23 @@ export class AdminSettingsComponent implements OnInit {
         console.log('Tamaño original (Logo):', (file.size / 1024).toFixed(1), 'KB');
         const compressed = await compressImage(file, 500, 500, 0.85); // Resoluciones cuadradas
         console.log('Tamaño comprimido (Logo):', (compressed.size / 1024).toFixed(1), 'KB');
-        this.selectedLogoFile = compressed;
+        this.selectedLogoFile.set(compressed);
       } catch (err) {
         console.error('Error al comprimir el logotipo:', err);
-        this.selectedLogoFile = file; // Fallback al original
+        this.selectedLogoFile.set(file); // Fallback al original
       }
     }
   }
 
   // Subir logotipo a la API
   uploadLogo() {
-    if (!this.selectedLogoFile) return;
+    if (!this.selectedLogoFile()) return;
 
     this.isUploadingLogo.set(true);
     this.messageStatus.set('idle');
 
     const formData = new FormData();
-    formData.append('logo', this.selectedLogoFile);
+    formData.append('logo', this.selectedLogoFile()!);
 
     this.http.post<{ success: boolean; logo_url: string }>('/api/settings/logo', formData)
       .subscribe({
@@ -579,7 +653,7 @@ export class AdminSettingsComponent implements OnInit {
           if (res && res.success) {
             this.messageStatus.set('success');
             this.statusMessage.set('El logotipo se ha subido y aplicado exitosamente.');
-            this.selectedLogoFile = null;
+            this.selectedLogoFile.set(null);
             // Recargar configuraciones locales globales
             this.config.loadConfig();
           } else {
@@ -593,6 +667,100 @@ export class AdminSettingsComponent implements OnInit {
           this.messageStatus.set('error');
           this.statusMessage.set(err.error?.message || 'Error de conexión al subir el archivo.');
           this.isUploadingLogo.set(false);
+        }
+      });
+  }
+
+  async onPurposeFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        console.log('Tamaño original (Propósito):', (file.size / 1024).toFixed(1), 'KB');
+        const compressed = await compressImage(file, 1280, 720, 0.85); // Mayor resolución para secciones
+        console.log('Tamaño comprimido (Propósito):', (compressed.size / 1024).toFixed(1), 'KB');
+        this.selectedPurposeFile.set(compressed);
+      } catch (err) {
+        console.error('Error al comprimir imagen de propósito:', err);
+        this.selectedPurposeFile.set(file);
+      }
+    }
+  }
+
+  uploadPurposeImage() {
+    if (!this.selectedPurposeFile()) return;
+
+    this.isUploadingPurpose.set(true);
+    this.messageStatus.set('idle');
+
+    const formData = new FormData();
+    formData.append('image', this.selectedPurposeFile()!);
+
+    this.http.post<{ success: boolean; purpose_image_url: string }>('/api/settings/purpose-image', formData)
+      .subscribe({
+        next: (res) => {
+          if (res && res.success) {
+            this.messageStatus.set('success');
+            this.statusMessage.set('La imagen de propósito se ha subido y aplicado exitosamente.');
+            this.selectedPurposeFile.set(null);
+            this.config.loadConfig();
+          } else {
+            this.messageStatus.set('error');
+            this.statusMessage.set('No se pudo subir la imagen de propósito.');
+          }
+          this.isUploadingPurpose.set(false);
+        },
+        error: (err) => {
+          console.error('Error al subir imagen de propósito:', err);
+          this.messageStatus.set('error');
+          this.statusMessage.set(err.error?.message || 'Error de conexión al subir el archivo.');
+          this.isUploadingPurpose.set(false);
+        }
+      });
+  }
+
+  async onCtaFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        console.log('Tamaño original (Colaboración):', (file.size / 1024).toFixed(1), 'KB');
+        const compressed = await compressImage(file, 1280, 720, 0.85); // Mayor resolución para secciones
+        console.log('Tamaño comprimido (Colaboración):', (compressed.size / 1024).toFixed(1), 'KB');
+        this.selectedCtaFile.set(compressed);
+      } catch (err) {
+        console.error('Error al comprimir imagen de colaboración:', err);
+        this.selectedCtaFile.set(file);
+      }
+    }
+  }
+
+  uploadCtaImage() {
+    if (!this.selectedCtaFile()) return;
+
+    this.isUploadingCta.set(true);
+    this.messageStatus.set('idle');
+
+    const formData = new FormData();
+    formData.append('image', this.selectedCtaFile()!);
+
+    this.http.post<{ success: boolean; cta_image_url: string }>('/api/settings/cta-image', formData)
+      .subscribe({
+        next: (res) => {
+          if (res && res.success) {
+            this.messageStatus.set('success');
+            this.statusMessage.set('La imagen de colaboración se ha subido y aplicado exitosamente.');
+            this.selectedCtaFile.set(null);
+            this.config.loadConfig();
+          } else {
+            this.messageStatus.set('error');
+            this.statusMessage.set('No se pudo subir la imagen de colaboración.');
+          }
+          this.isUploadingCta.set(false);
+        },
+        error: (err) => {
+          console.error('Error al subir imagen de colaboración:', err);
+          this.messageStatus.set('error');
+          this.statusMessage.set(err.error?.message || 'Error de conexión al subir el archivo.');
+          this.isUploadingCta.set(false);
         }
       });
   }
@@ -640,16 +808,16 @@ export class AdminSettingsComponent implements OnInit {
       try {
         console.log('Comprimiendo nueva diapositiva...');
         const compressed = await compressImage(file, 1920, 1080, 0.85); // Alta resolución horizontal
-        this.selectedSlideFile = compressed;
+        this.selectedSlideFile.set(compressed);
       } catch (err) {
         console.error('Error al comprimir diapositiva:', err);
-        this.selectedSlideFile = file;
+        this.selectedSlideFile.set(file);
       }
     }
   }
 
   addSlide() {
-    if (!this.selectedSlideFile) {
+    if (!this.selectedSlideFile()) {
       this.messageStatus.set('error');
       this.statusMessage.set('Por favor, seleccione una imagen para la nueva diapositiva.');
       return;
@@ -659,7 +827,7 @@ export class AdminSettingsComponent implements OnInit {
     this.messageStatus.set('idle');
 
     const formData = new FormData();
-    formData.append('image', this.selectedSlideFile);
+    formData.append('image', this.selectedSlideFile()!);
     formData.append('title', this.newSlideTitle());
     formData.append('subtitle', this.newSlideSubtitle());
     formData.append('order_index', this.newSlideOrder().toString());
@@ -673,11 +841,11 @@ export class AdminSettingsComponent implements OnInit {
             this.newSlideTitle.set('');
             this.newSlideSubtitle.set('');
             this.newSlideOrder.set(0);
-            this.selectedSlideFile = null;
-            
+            this.selectedSlideFile.set(null);
+
             const fileInput = document.getElementById('new_slide_file') as HTMLInputElement;
             if (fileInput) fileInput.value = '';
-            
+
             this.config.loadConfig(); // Recargar datos
           } else {
             this.messageStatus.set('error');
@@ -721,7 +889,7 @@ export class AdminSettingsComponent implements OnInit {
     if (titleInput) formData.append('title', titleInput.value);
     if (subtitleInput) formData.append('subtitle', subtitleInput.value);
     if (orderInput) formData.append('order_index', orderInput.value);
-    
+
     if (this.selectedEditFiles[id]) {
       formData.append('image', this.selectedEditFiles[id]);
     }
@@ -733,10 +901,10 @@ export class AdminSettingsComponent implements OnInit {
             this.messageStatus.set('success');
             this.statusMessage.set('Diapositiva actualizada exitosamente.');
             delete this.selectedEditFiles[id];
-            
+
             const fileInput = document.getElementById(`slide_file_${id}`) as HTMLInputElement;
             if (fileInput) fileInput.value = '';
-            
+
             this.config.loadConfig(); // Recargar datos
           } else {
             this.messageStatus.set('error');

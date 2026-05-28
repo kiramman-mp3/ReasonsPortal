@@ -60,10 +60,12 @@ async function seedDatabase() {
     if (settings[0].count === 0) {
       console.log('Poblando tabla site_settings...');
       await connection.query(`
-        INSERT INTO site_settings (id, logo_url, group_name, institution, description, objective_general, mission, vision, primary_color, secondary_color, accent_color, contact_address, contact_location, contact_email)
+        INSERT INTO site_settings (id, logo_url, purpose_image_url, cta_image_url, group_name, institution, description, objective_general, mission, vision, primary_color, secondary_color, accent_color, contact_address, contact_location, contact_email)
         VALUES (
           1, 
           'uploads/logo_reasons.png', 
+          'uploads/sustainability_research.png',
+          'uploads/team_collaboration.png',
           'REASONS', 
           'Universidad Técnica de Ambato',
           'Grupo de investigación que impulsa soluciones innovadoras en ingeniería con un enfoque de sostenibilidad y compromiso social.',
@@ -103,10 +105,10 @@ async function seedDatabase() {
     if (lines[0].count === 0) {
       console.log('Poblando tabla research_lines...');
       await connection.query(`
-        INSERT INTO research_lines (settings_id, title, description, icon, order_index) VALUES 
-        (1, 'Diseño, Materiales, Producción, Identidad, Sostenibilidad y Tecnologías aplicadas', 'Enfoque en la creación de productos ecológicos, análisis del ciclo de vida, optimización de materiales e innovaciones en procesos productivos industriales.', 'bi-palette', 1),
-        (1, 'Software, Tecnologías de la Información y Ciencias de Datos', 'Desarrollo de sistemas de información inteligentes, análisis predictivos usando Big Data, soluciones móviles y automatización aplicada a la resolución de problemas científicos y sociales.', 'bi-code-slash', 2),
-        (1, 'Energía, Desarrollo Sostenible y Gestión de Recursos Naturales', 'Estudio de energías renovables, mitigación de la huella de carbono, optimización del recurso hídrico y conservación ambiental a través de la ingeniería.', 'bi-globe-americas', 3)
+        INSERT INTO research_lines (settings_id, title, description, icon, \`lines\`, order_index) VALUES 
+        (1, 'Diseño, Materiales, Producción, Identidad, Sostenibilidad y Tecnologías aplicadas', 'Enfoque en la creación de productos ecológicos, análisis del ciclo de vida, optimización de materiales e innovaciones en procesos productivos industriales.', 'bi-palette', 'Diseño de productos ecológicos, Análisis de ciclo de vida, Optimización de materiales, Innovaciones en procesos industriales', 1),
+        (1, 'Software, Tecnologías de la Información y Ciencias de Datos', 'Desarrollo de sistemas de información inteligentes, análisis predictivos usando Big Data, soluciones móviles y automatización aplicada a la resolución de problemas científicos y sociales.', 'bi-code-slash', 'Sistemas de información inteligentes, Big Data y analítica predictiva, Desarrollo de aplicaciones móviles y web, Automatización científica', 2),
+        (1, 'Energía, Desarrollo Sostenible y Gestión de Recursos Naturales', 'Estudio de energías renovables, mitigación de la huella de carbono, optimización del recurso hídrico y conservación ambiental a través de la ingeniería.', 'bi-globe-americas', 'Energías renovables y limpias, Mitigación de huella de carbono, Optimización de recursos hídricos, Conservación ambiental', 3)
       `);
       console.log('✔ research_lines pobladas.');
     } else {

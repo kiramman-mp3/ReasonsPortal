@@ -46,7 +46,7 @@ if (process.platform === 'win32') {
 const env = { ...process.env };
 
 // 1. Iniciar Servidor Backend (Express + MySQL)
-const backend = spawn('npm', ['run', 'start'], {
+const backend = spawn('npm', ['run', 'dev'], {
   cwd: path.join(__dirname, '../backend'),
   shell: true,
   env: env

@@ -164,6 +164,56 @@ Permite gestionar la configuración general del portal, equipo de investigadores
           }
         }
       },
+      '/api/settings/purpose-image': {
+        post: {
+          tags: ['Configuración Portal'],
+          summary: 'Subir nueva imagen de propósito (Home)',
+          description: 'Carga un nuevo archivo de imagen de propósito de forma física en el servidor.',
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    image: { type: 'string', format: 'binary', description: 'Archivo de imagen para la sección de propósito' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: { description: 'Imagen de propósito subida y aplicada exitosamente.' },
+            401: { description: 'No autorizado.' }
+          }
+        }
+      },
+      '/api/settings/cta-image': {
+        post: {
+          tags: ['Configuración Portal'],
+          summary: 'Subir nueva imagen de colaboración/CTA (Home)',
+          description: 'Carga un nuevo archivo de imagen de colaboración de forma física en el servidor.',
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'multipart/form-data': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    image: { type: 'string', format: 'binary', description: 'Archivo de imagen para la sección de colaboración' }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            200: { description: 'Imagen de colaboración subida y aplicada exitosamente.' },
+            401: { description: 'No autorizado.' }
+          }
+        }
+      },
       '/api/settings/slides': {
         post: {
           tags: ['Configuración Portal'],

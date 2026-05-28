@@ -103,7 +103,7 @@ import { ConfigService } from '../../core/services/config.service';
           <div class="lg:col-span-5 relative group">
             <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-3xl blur-2xl opacity-10 group-hover:opacity-15 transition-opacity duration-300"></div>
             <div class="relative bg-white rounded-3xl overflow-hidden shadow-premium border border-slate-100 p-4">
-              <img src="/sustainability_research.png" alt="Sostenibilidad y Desarrollo Tecnológico" class="w-full h-[450px] object-cover rounded-2xl transform hover:scale-[1.02] transition-transform duration-500">
+              <img [src]="config.purposeImageUrl()" alt="Sostenibilidad y Desarrollo Tecnológico" class="w-full h-[450px] object-cover rounded-2xl transform hover:scale-[1.02] transition-transform duration-500">
               <div class="absolute bottom-8 left-8 right-8 bg-white/90 backdrop-blur-md rounded-2xl p-5 border border-slate-100/50 shadow-lg text-slate-800">
                 <span class="text-[9px] font-extrabold uppercase tracking-widest text-primary block mb-1">Impacto Global</span>
                 <p class="text-xs font-semibold leading-relaxed">
@@ -243,7 +243,7 @@ import { ConfigService } from '../../core/services/config.service';
             <div class="lg:col-span-5 relative group">
               <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-25"></div>
               <div class="relative bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                <img src="/team_collaboration.png" alt="Colaboración en REASONS" class="w-full h-[320px] object-cover object-center transform hover:scale-105 transition-transform duration-500">
+                <img [src]="config.ctaImageUrl()" alt="Colaboración en REASONS" class="w-full h-[320px] object-cover object-center transform hover:scale-105 transition-transform duration-500">
               </div>
             </div>
 

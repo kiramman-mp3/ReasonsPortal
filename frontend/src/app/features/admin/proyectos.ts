@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { compressImage } from '../../core/utils/image-compressor';
+import { ConfigService } from '../../core/services/config.service';
 import { Researcher } from './investigadores';
 
 export interface Project {
@@ -12,6 +13,8 @@ export interface Project {
   objectives: string;
   results: string;
   image_url?: string;
+  research_line_id?: number;
+  research_line_title?: string;
   participants?: any[];
 }
 
@@ -55,7 +58,7 @@ export interface Project {
             <thead>
               <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 <th class="px-6 py-4">Portada</th>
-                <th class="px-6 py-4">Proyecto</th>
+                <th class="px-6 py-4">Proyecto / Eje Temático</th>
                 <th class="px-6 py-4">Participantes</th>
                 <th class="px-6 py-4 text-right">Acciones</th>
               </tr>
@@ -70,9 +73,17 @@ export interface Project {
                   </div>
                 </td>
 
-                <!-- Título -->
-                <td class="px-6 py-4 text-slate-800 font-bold text-sm max-w-sm truncate" [title]="proj.title">
-                  {{ proj.title }}
+                <!-- Título y Eje -->
+                <td class="px-6 py-4 max-w-sm">
+                  <div class="text-slate-800 font-bold text-sm truncate" [title]="proj.title">{{ proj.title }}</div>
+                  <div class="mt-1 flex flex-wrap gap-1">
+                    <span *ngIf="proj.research_line_title" class="px-2 py-0.5 bg-primary-light text-primary font-bold rounded text-[9px] uppercase tracking-wider">
+                      {{ proj.research_line_title }}
+                    </span>
+                    <span *ngIf="!proj.research_line_title" class="px-2 py-0.5 bg-slate-100 text-slate-400 font-bold rounded text-[9px] uppercase tracking-wider">
+                      Sin Eje Asignado
+                    </span>
+                  </div>
                 </td>
 
                 <!-- Participantes -->
@@ -136,10 +147,22 @@ export interface Project {
           <!-- Formulario -->
           <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="flex-grow overflow-y-auto p-6 space-y-5 min-h-0">
             
-            <!-- Título -->
-            <div class="space-y-1">
-              <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Título del Proyecto *</label>
-              <input type="text" formControlName="title" class="admin-input-small" placeholder="Ej: Optimización de sistemas de micro-redes de energías renovables">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <!-- Título -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Título del Proyecto *</label>
+                <input type="text" formControlName="title" class="admin-input-small" placeholder="Ej: Optimización de sistemas de micro-redes de energías renovables">
+              </div>
+              <!-- Eje Temático -->
+              <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Eje Temático de Estudio *</label>
+                <select formControlName="research_line_id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium">
+                  <option value="" disabled selected>-- Seleccione Eje Temático --</option>
+                  <option *ngFor="let axis of config.settings()?.research_lines" [value]="axis.id">
+                    {{ axis.title }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <!-- Descripción -->
@@ -225,6 +248,7 @@ export interface Project {
 export class AdminProjectsComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
+  config = inject(ConfigService);
 
   projects = signal<Project[]>([]);
   allResearchers = signal<Researcher[]>([]);
@@ -259,7 +283,8 @@ export class AdminProjectsComponent implements OnInit {
       title: ['', [Validators.required]],
       description: ['', [Validators.required]],
       objectives: ['', [Validators.required]],
-      results: ['', [Validators.required]]
+      results: ['', [Validators.required]],
+      research_line_id: ['', [Validators.required]]
     });
   }
 
@@ -321,7 +346,13 @@ export class AdminProjectsComponent implements OnInit {
   // Modales
   openCreateModal() {
     this.isEditMode.set(false);
-    this.projectForm.reset();
+    this.projectForm.reset({
+      title: '',
+      description: '',
+      objectives: '',
+      results: '',
+      research_line_id: ''
+    });
     this.selectedFile = null;
     this.selectedResearcherIds.set([]);
     this.imagePreviewUrl.set('/uploads/default_project.png');
@@ -337,7 +368,8 @@ export class AdminProjectsComponent implements OnInit {
       title: proj.title,
       description: proj.description,
       objectives: proj.objectives,
-      results: proj.results
+      results: proj.results,
+      research_line_id: proj.research_line_id || ''
     });
 
     const participantIds = proj.participants ? proj.participants.map(p => p.id) : [];

@@ -2,11 +2,15 @@ const path = require('path');
 const fs = require('fs');
 const pool = require('../config/db');
 
-// Obtener catálogo de proyectos
 exports.getAllProjects = async (req, res) => {
   try {
-    // 1. Obtener proyectos
-    const [projects] = await pool.query('SELECT * FROM projects ORDER BY id DESC');
+    // 1. Obtener proyectos con su Eje Temático
+    const [projects] = await pool.query(`
+      SELECT p.*, rl.title AS research_line_title 
+      FROM projects p 
+      LEFT JOIN research_lines rl ON p.research_line_id = rl.id 
+      ORDER BY p.id DESC
+    `);
 
     if (projects.length === 0) {
       return res.status(200).json({ success: true, data: [] });
@@ -53,7 +57,7 @@ exports.getAllProjects = async (req, res) => {
 
 // Crear un proyecto
 exports.createProject = async (req, res) => {
-  const { title, description, objectives, results, researcher_ids } = req.body;
+  const { title, description, objectives, results, researcher_ids, research_line_id } = req.body;
 
   let image_url = 'uploads/default_project.png'; // Imagen por defecto
   if (req.file) {
@@ -67,9 +71,9 @@ exports.createProject = async (req, res) => {
 
     // 1. Insertar proyecto
     const [projResult] = await connection.query(
-      `INSERT INTO projects (title, description, objectives, results, image_url) 
-      VALUES (?, ?, ?, ?, ?)`,
-      [title, description, objectives, results, image_url]
+      `INSERT INTO projects (title, description, objectives, results, image_url, research_line_id) 
+      VALUES (?, ?, ?, ?, ?, ?)`,
+      [title, description, objectives, results, image_url, research_line_id || null]
     );
 
     const projectId = projResult.insertId;
@@ -123,7 +127,7 @@ exports.createProject = async (req, res) => {
 // Actualizar un proyecto
 exports.updateProject = async (req, res) => {
   const { id } = req.params;
-  const { title, description, objectives, results, researcher_ids } = req.body;
+  const { title, description, objectives, results, researcher_ids, research_line_id } = req.body;
 
   const connection = await pool.getConnection();
 
@@ -163,9 +167,10 @@ exports.updateProject = async (req, res) => {
         description = ?, 
         objectives = ?, 
         results = ?, 
-        image_url = ? 
+        image_url = ?,
+        research_line_id = ? 
       WHERE id = ?`,
-      [title, description, objectives, results, image_url, id]
+      [title, description, objectives, results, image_url, research_line_id || null, id]
     );
 
     // 4. Actualizar participantes (Eliminar y volver a insertar)

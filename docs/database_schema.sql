@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS research_lines (
     title VARCHAR(150) NOT NULL,
     description TEXT NOT NULL,
     icon VARCHAR(50) DEFAULT 'bi-gear', -- Nombre del icono de Bootstrap Icons
+    `lines` TEXT NULL,                  -- Líneas específicas asociadas (separadas por comas)
     order_index INT NOT NULL DEFAULT 0,
     FOREIGN KEY (settings_id) REFERENCES site_settings(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -69,8 +70,10 @@ CREATE TABLE IF NOT EXISTS projects (
     objectives TEXT NOT NULL,
     results TEXT NOT NULL,
     image_url VARCHAR(255) NULL,
+    research_line_id INT NULL,      -- Eje/Línea de estudio asociado
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (research_line_id) REFERENCES research_lines(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- 6. Tabla Intermedia: project_researchers (Muchos a Muchos entre Proyectos e Investigadores)
@@ -158,10 +161,10 @@ INSERT INTO specific_objectives (id, settings_id, objective, order_index) VALUES
 ON DUPLICATE KEY UPDATE id=id;
 
 -- Inserción inicial de las 3 Líneas de Investigación descritas
-INSERT INTO research_lines (id, settings_id, title, description, icon, order_index) VALUES 
-(1, 1, 'Diseño, Materiales, Producción, Identidad, Sostenibilidad y Tecnologías aplicadas', 'Enfoque en la creación de productos ecológicos, análisis del ciclo de vida, optimización de materiales e innovaciones en procesos productivos industriales.', 'bi-palette', 1),
-(2, 1, 'Software, Tecnologías de la Información y Ciencias de Datos', 'Desarrollo de sistemas de información inteligentes, análisis predictivos usando Big Data, soluciones móviles y automatización aplicada a la resolución de problemas científicos y sociales.', 'bi-code-slash', 2),
-(3, 1, 'Energía, Desarrollo Sostenible y Gestión de Recursos Naturales', 'Estudio de energías renovables, mitigación de la huella de carbono, optimización del recurso hídrico y conservación ambiental a través de la ingeniería.', 'bi-globe-americas', 3)
+INSERT INTO research_lines (id, settings_id, title, description, icon, `lines`, order_index) VALUES 
+(1, 1, 'Diseño, Materiales, Producción, Identidad, Sostenibilidad y Tecnologías aplicadas', 'Enfoque en la creación de productos ecológicos, análisis del ciclo de vida, optimización de materiales e innovaciones en procesos productivos industriales.', 'bi-palette', 'Diseño de productos ecológicos, Análisis de ciclo de vida, Optimización de materiales, Innovaciones en procesos industriales', 1),
+(2, 1, 'Software, Tecnologías de la Información y Ciencias de Datos', 'Desarrollo de sistemas de información inteligentes, análisis predictivos usando Big Data, soluciones móviles y automatización aplicada a la resolución de problemas científicos y sociales.', 'bi-code-slash', 'Sistemas de información inteligentes, Big Data y analítica predictiva, Desarrollo de aplicaciones móviles y web, Automatización científica', 2),
+(3, 1, 'Energía, Desarrollo Sostenible y Gestión de Recursos Naturales', 'Estudio de energías renovables, mitigación de la huella de carbono, optimización del recurso hídrico y conservación ambiental a través de la ingeniería.', 'bi-globe-americas', 'Energías renovables y limpias, Mitigación de huella de carbono, Optimización de recursos hídricos, Conservación ambiental', 3)
 ON DUPLICATE KEY UPDATE id=id;
 
 -- Inserción de un usuario de administración semilla por defecto (Usuario: admin, Contraseña: AdminReasons2026!)

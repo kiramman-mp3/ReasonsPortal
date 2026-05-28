@@ -82,7 +82,8 @@ Permite gestionar la configuración general del portal, equipo de investigadores
                 properties: {
                   title: { type: 'string', example: 'Software y Ciencia de Datos' },
                   description: { type: 'string', example: 'Desarrollo de sistemas inteligentes...' },
-                  icon: { type: 'string', example: 'bi-code-slash' }
+                  icon: { type: 'string', example: 'bi-code-slash' },
+                  lines: { type: 'string', example: 'Sistemas inteligentes, Big Data y analítica' }
                 }
               }
             }
@@ -284,6 +285,7 @@ Permite gestionar la configuración general del portal, equipo de investigadores
                     objectives: { type: 'string', example: 'Diseñar el bio-reactor, evaluar la eficiencia...' },
                     results: { type: 'string', example: 'Reducción del 40% de CO2 en laboratorio...' },
                     researcher_ids: { type: 'string', example: '[1, 2]', description: 'JSON array de IDs de investigadores asociados' },
+                    research_line_id: { type: 'integer', example: 2, description: 'ID del Eje/Línea de investigación asociado' },
                     image: { type: 'string', format: 'binary', description: 'Banner de portada del proyecto' }
                   }
                 }
@@ -316,6 +318,7 @@ Permite gestionar la configuración general del portal, equipo de investigadores
                     objectives: { type: 'string' },
                     results: { type: 'string' },
                     researcher_ids: { type: 'string', example: '[1]' },
+                    research_line_id: { type: 'integer', example: 2 },
                     image: { type: 'string', format: 'binary' }
                   }
                 }

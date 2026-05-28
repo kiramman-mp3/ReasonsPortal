@@ -156,22 +156,35 @@ import { ConfigService } from '../../core/services/config.service';
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div *ngFor="let line of config.settings()?.research_lines" 
-                 class="group bg-white rounded-3xl p-8 border border-slate-200/50 shadow-premium hover:shadow-hover hover:-translate-y-1.5 transition-all duration-300">
+                 class="group bg-white rounded-3xl p-8 border border-slate-200/50 shadow-premium hover:shadow-hover hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between h-full">
               
-              <!-- Icono dinámico -->
-              <div class="w-14 h-14 rounded-2xl bg-primary-light text-primary flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <i class="bi text-2xl" [ngClass]="line.icon || 'bi-gear'"></i>
+              <div>
+                <!-- Icono dinámico -->
+                <div class="w-14 h-14 rounded-2xl bg-primary-light text-primary flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <i class="bi text-2xl" [ngClass]="line.icon || 'bi-gear'"></i>
+                </div>
+
+                <!-- Título -->
+                <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-4 group-hover:text-primary transition-colors leading-snug">
+                  {{ line.title }}
+                </h3>
+
+                <!-- Descripción -->
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                  {{ line.description }}
+                </p>
               </div>
 
-              <!-- Título -->
-              <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-4 group-hover:text-primary transition-colors leading-snug">
-                {{ line.title }}
-              </h3>
-
-              <!-- Descripción -->
-              <p class="text-slate-600 text-sm leading-relaxed">
-                {{ line.description }}
-              </p>
+              <!-- Líneas de Investigación específicas -->
+              <div *ngIf="line.lines" class="mt-4 pt-4 border-t border-slate-100/80 space-y-2">
+                <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Líneas específicas:</h4>
+                <ul class="space-y-2">
+                  <li *ngFor="let item of line.lines.split(',')" class="flex items-start space-x-2 text-slate-600 text-xs font-semibold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 flex-shrink-0 animate-pulse"></span>
+                    <span class="leading-tight">{{ item.trim() }}</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 

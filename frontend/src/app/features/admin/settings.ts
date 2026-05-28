@@ -226,27 +226,38 @@ import { compressImage } from '../../core/utils/image-compressor';
 
         <!-- ==================== TAB 4: LÍNEAS DE INVESTIGACIÓN ==================== -->
         <div *ngIf="activeTab() === 'lines'" class="space-y-6 animate-scale-in">
-          <div class="border-b border-slate-100 pb-2">
-            <h3 class="text-slate-800 font-bold text-sm uppercase tracking-wider">Ejes y Líneas de Investigación</h3>
-            <p class="text-slate-500 text-xs">Configura los 3 ejes prioritarios del grupo de investigación y asóciales un icono representativo.</p>
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <div>
+              <h3 class="text-slate-800 font-bold text-sm uppercase tracking-wider">Ejes y Líneas de Investigación</h3>
+              <p class="text-slate-500 text-xs">Configura los ejes temáticos prioritarios del grupo y asóciales sus líneas de investigación.</p>
+            </div>
+            <button type="button" (click)="addResearchLine()" 
+                    class="px-3 py-1.5 bg-primary-light text-primary hover:bg-primary-light/80 text-xs font-bold rounded-lg transition-all flex items-center space-x-1">
+              <i class="bi bi-plus-circle-fill"></i>
+              <span>Agregar Eje Temático</span>
+            </button>
           </div>
 
           <div formArrayName="research_lines" class="space-y-6">
             <div *ngFor="let line of linesArray.controls; let i = index" 
                  [formGroupName]="i" 
-                 class="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4 relative">
+                 class="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4 relative animate-scale-in">
               
               <div class="flex justify-between items-center">
                 <span class="px-2.5 py-1 bg-primary text-white text-[10px] font-bold rounded-md uppercase tracking-wider">
-                  Eje #{{ i + 1 }}
+                  Eje Temático #{{ i + 1 }}
                 </span>
+                <button type="button" (click)="removeResearchLine(i)" 
+                        class="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition-all flex items-center justify-center">
+                  <i class="bi bi-trash-fill text-base"></i>
+                </button>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Título -->
                 <div class="md:col-span-2 space-y-1.5">
-                  <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Título de la Línea *</label>
-                  <input type="text" formControlName="title" class="admin-input-small-white">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Título del Eje Temático *</label>
+                  <input type="text" formControlName="title" class="admin-input-small-white" placeholder="Ej: Software y Ciencia de Datos">
                 </div>
                 <!-- Icono -->
                 <div class="space-y-1.5">
@@ -260,10 +271,20 @@ import { compressImage } from '../../core/utils/image-compressor';
 
               <!-- Descripción -->
               <div class="space-y-1.5">
-                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Detalle de Investigación *</label>
-                <textarea formControlName="description" rows="3" class="admin-input-small-white resize-none"></textarea>
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Descripción del Eje *</label>
+                <textarea formControlName="description" rows="2" class="admin-input-small-white resize-none" placeholder="Describa el alcance de este eje..."></textarea>
               </div>
 
+              <!-- Líneas específicas -->
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Líneas de Investigación asociadas (separadas por comas) *</label>
+                <textarea formControlName="lines" rows="2" class="admin-input-small-white resize-none" placeholder="Ej: Inteligencia Artificial, Big Data y Analítica, Desarrollo Móvil y Web"></textarea>
+              </div>
+
+            </div>
+
+            <div *ngIf="linesArray.length === 0" class="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-xs">
+              No hay ejes temáticos definidos. Haz clic en "Agregar Eje Temático".
             </div>
           </div>
 
@@ -367,7 +388,8 @@ export class AdminSettingsComponent implements OnInit {
         this.linesArray.push(this.fb.group({
           title: [line.title, [Validators.required]],
           description: [line.description, [Validators.required]],
-          icon: [line.icon, [Validators.required]]
+          icon: [line.icon, [Validators.required]],
+          lines: [line.lines || '', [Validators.required]]
         }));
       });
     }
@@ -382,6 +404,20 @@ export class AdminSettingsComponent implements OnInit {
 
   removeObjective(index: number) {
     this.objectivesArray.removeAt(index);
+  }
+
+  // Ejes y líneas de investigación
+  addResearchLine() {
+    this.linesArray.push(this.fb.group({
+      title: ['', [Validators.required]],
+      description: ['', [Validators.required]],
+      icon: ['bi-gear', [Validators.required]],
+      lines: ['', [Validators.required]]
+    }));
+  }
+
+  removeResearchLine(index: number) {
+    this.linesArray.removeAt(index);
   }
 
   async onLogoFileSelected(event: any) {

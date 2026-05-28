@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ConfigService } from '../../core/services/config.service';
 
 export interface Participant {
   id: number;
@@ -17,6 +18,8 @@ export interface Project {
   objectives: string;
   results: string;
   image_url?: string;
+  research_line_id?: number;
+  research_line_title?: string;
   participants?: Participant[];
 }
 
@@ -38,11 +41,28 @@ export interface Project {
       </div>
 
       <!-- Barra de Búsqueda y Filtros -->
-      <div class="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-premium p-4">
-        <div class="relative flex items-center">
-          <i class="bi bi-search absolute left-4 text-slate-400 text-lg"></i>
-          <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por título o palabras clave..." 
-                 class="w-full bg-slate-50 border-0 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium placeholder-slate-400 transition-all">
+      <div class="space-y-6">
+        <div class="max-w-md mx-auto bg-white rounded-2xl border border-slate-100 shadow-premium p-4">
+          <div class="relative flex items-center">
+            <i class="bi bi-search absolute left-4 text-slate-400 text-lg"></i>
+            <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar por título o palabras clave..." 
+                   class="w-full bg-slate-50 border-0 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-700 font-medium placeholder-slate-400 transition-all">
+          </div>
+        </div>
+
+        <!-- Filtros por Eje Temático (Chips) -->
+        <div class="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
+          <button (click)="selectedAxisId.set(null)" 
+                  [ngClass]="selectedAxisId() === null ? 'bg-primary text-white shadow-md scale-105' : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 hover:border-slate-300'"
+                  class="px-4 py-2.5 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer shadow-sm">
+            Todos los Proyectos
+          </button>
+          <button *ngFor="let axis of config.settings()?.research_lines" 
+                  (click)="selectedAxisId.set(axis.id)"
+                  [ngClass]="selectedAxisId() === axis.id ? 'bg-primary text-white shadow-md scale-105' : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 hover:border-slate-300'"
+                  class="px-4 py-2.5 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer shadow-sm max-w-xs truncate">
+            {{ axis.title.split(',')[0] }}
+          </button>
         </div>
       </div>
 
@@ -65,6 +85,12 @@ export interface Project {
             <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
               <span class="px-4 py-2 bg-white text-slate-900 text-xs font-bold rounded-lg shadow-md">
                 Ver Detalles del Proyecto
+              </span>
+            </div>
+            <!-- Badge de Eje -->
+            <div *ngIf="proj.research_line_title" class="absolute top-4 left-4 z-10">
+              <span class="px-2.5 py-1 bg-white/95 backdrop-blur-md text-primary font-extrabold text-[9px] uppercase tracking-wider rounded-lg shadow-md border border-slate-150">
+                {{ proj.research_line_title.split(',')[0] }}
               </span>
             </div>
           </div>
@@ -116,7 +142,10 @@ export interface Project {
           <!-- Cabecera del Modal con Imagen -->
           <div class="relative h-56 w-full bg-slate-900 flex-shrink-0">
             <img [src]="getImageUrl(selectedProject()?.image_url)" [alt]="selectedProject()?.title" class="w-full h-full object-cover opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent flex items-end p-8">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent flex flex-col justify-end p-8 space-y-2">
+              <span *ngIf="selectedProject()?.research_line_title" class="px-2.5 py-1 bg-primary text-white text-[9px] font-extrabold rounded-md uppercase tracking-wider w-fit border border-primary/20 shadow-md">
+                {{ selectedProject()?.research_line_title }}
+              </span>
               <h2 class="text-xl sm:text-2xl font-extrabold text-white leading-tight tracking-tight max-w-2xl">
                 {{ selectedProject()?.title }}
               </h2>
@@ -186,17 +215,29 @@ export interface Project {
 })
 export class ProjectsComponent implements OnInit {
   private http = inject(HttpClient);
+  config = inject(ConfigService);
 
   projects = signal<Project[]>([]);
   selectedProject = signal<Project | null>(null);
+  selectedAxisId = signal<number | null>(null);
   isLoading = signal(true);
   searchQuery = '';
 
   // Filtro reactivo en base a señales y computeds
   filteredProjects = computed(() => {
     const query = this.searchQuery.toLowerCase().trim();
-    if (!query) return this.projects();
-    return this.projects().filter(p => 
+    const axisId = this.selectedAxisId();
+    
+    let list = this.projects();
+    
+    // 1. Filtrar por Eje Temático si hay uno seleccionado
+    if (axisId !== null) {
+      list = list.filter(p => p.research_line_id === axisId);
+    }
+    
+    // 2. Filtrar por texto
+    if (!query) return list;
+    return list.filter(p => 
       p.title.toLowerCase().includes(query) || 
       p.description.toLowerCase().includes(query) ||
       p.objectives.toLowerCase().includes(query) ||

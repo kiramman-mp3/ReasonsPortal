@@ -116,8 +116,8 @@ exports.updateSettings = async (req, res) => {
         const line = research_lines[i];
         if (line.title.trim()) {
           await connection.query(
-            'INSERT INTO research_lines (settings_id, title, description, icon, order_index) VALUES (1, ?, ?, ?, ?)',
-            [line.title, line.description, line.icon || 'bi-gear', i + 1]
+            'INSERT INTO research_lines (settings_id, title, description, icon, `lines`, order_index) VALUES (1, ?, ?, ?, ?, ?)',
+            [line.title, line.description, line.icon || 'bi-gear', line.lines || '', i + 1]
           );
         }
       }

@@ -43,14 +43,31 @@ Para facilitar las pruebas y demostraciones en vivo, integramos un sistema de en
 
 ---
 
+## 📚 Documentación Completa
+
+Para facilitar la comprensión, el desarrollo y la administración del proyecto, se ha compilado una biblioteca de guías y manuales detallados en la carpeta [`docs/`](docs/):
+
+*   📘 **[Manual del Usuario](docs/user_manual.md)**: Guía paso a paso para que directores y administradores gestionen el contenido del portal (carrusel, investigadores, proyectos, publicaciones, colores corporativos y imágenes de inicio) sin tocar código.
+*   💻 **[Guía del Desarrollador](docs/developer_guide.md)**: Detalle técnico de la arquitectura, variables dinámicas CSS, reactividad con Angular Signals, e interceptores/guardianes del flujo.
+*   ⚙️ **[Manual de Operaciones y Ejecución](docs/operations_guide.md)**: Instrucciones detalladas de despliegue, configuración de variables de entorno `.env`, inicialización de bases de datos, semillado y resolución de problemas de puertos o MySQL.
+*   🌐 **[Especificación de la API REST](docs/api_endpoints.md)**: Detalle completo de los endpoints, payloads de entrada/salida y respuestas JSON de la API.
+*   🛡️ **[Medidas de Seguridad](docs/security_measures.md)**: Documentación de las capas de protección implementadas contra las vulnerabilidades más comunes de OWASP.
+*   📐 **[Ecosistema Tecnológico](docs/technologies_used.md)**: Ficha técnica detallada con todas las herramientas, lenguajes y librerías que componen la solución.
+*   🗃️ **[Esquema de Base de Datos (DDL)](docs/database_schema.sql)**: Código de creación de tablas relacionales InnoDB y datos semilla de MySQL.
+
+---
+
 ## 📁 Estructura del Repositorio
 
 ```
-├── docs/                      # Esquemas DDL y especificación técnica
+├── docs/                      # Biblioteca de documentación técnica y manuales
+│   ├── user_manual.md         # Manual de administración para usuarios finales
+│   ├── developer_guide.md     # Guía arquitectónica y técnica para programadores
+│   ├── operations_guide.md    # Manual de instalación, despliegue y base de datos
 │   ├── database_schema.sql    # DDL Relacional de InnoDB y datos semilla
 │   ├── api_endpoints.md       # Mapa de peticiones y respuestas de la API REST
 │   ├── security_measures.md   # Capas de blindaje y sanitización activa
-│   └── technologies_used.md   # Especificación de tecnologías usadas
+│   └── technologies_used.md   # Especificación de tecnologías y versiones usadas
 ├── utils/                     # Scripts y utilidades de automatización
 │   ├── db-init.js             # Creador físico de la base de datos y tablas SQL
 │   ├── db-seed.js             # Generador de imágenes base64 y datos institucionales
@@ -73,6 +90,7 @@ Para facilitar las pruebas y demostraciones en vivo, integramos un sistema de en
 ```
 
 ---
+
 
 ## 🚀 Guía de Instalación y Ejecución
 

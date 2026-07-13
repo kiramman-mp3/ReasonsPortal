@@ -4,6 +4,26 @@ const helmet = require('helmet');
 const path = require('path');
 const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
+const pool = require('./config/db');
+
+// Cargar variables de entorno al inicio
+const envPaths = [
+  path.join(__dirname, '../.env'),
+  path.join(__dirname, '../../.env')
+];
+for (const p of envPaths) {
+  if (fs.existsSync(p)) {
+    require('dotenv').config({ path: p });
+    break;
+  }
+}
+
+// Validar variables críticas obligatorias
+if (!process.env.JWT_SECRET) {
+  console.error('\x1b[31mError Crítico: La variable de entorno JWT_SECRET no está configurada.\x1b[0m');
+  console.error('\x1b[33mEl servidor no se iniciará por razones de seguridad.\x1b[0m');
+  process.exit(1);
+}
 
 // Importar configuración de Swagger
 const swaggerSpec = require('./config/swagger');
@@ -51,7 +71,10 @@ const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '7d', // Guardar en caché del navegador por 7 días
+  immutable: true
+}));
 
 // 5. Exponer Documentación Interactiva Swagger (OpenAPI 3.0)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -85,18 +108,40 @@ app.use((err, req, res, next) => {
     });
   }
 
+  // Si es un error de Multer debido al filtro de tipo de formato
+  if (err.message && err.message.includes('Formato de archivo no soportado')) {
+    return res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+
   return res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Ocurrió un error inesperado en el servidor.'
   });
 });
 
-// 8. Inicializar servidor
-app.listen(PORT, () => {
-  console.log('==================================================');
-  console.log(`🚀 SERVIDOR REST CORRIENDO EN PUERTO: ${PORT}`);
-  console.log(`📝 DOCUMENTACIÓN INTERACTIVA (SWAGGER): http://localhost:${PORT}/api-docs`);
-  console.log('==================================================');
-});
+// 8. Inicializar servidor con verificación de base de datos
+async function startServer() {
+  try {
+    console.log('Probando conectividad con base de datos MySQL...');
+    await pool.query('SELECT 1');
+    console.log('\x1b[32m✔ Conexión exitosa a la base de datos MySQL.\x1b[0m');
+
+    app.listen(PORT, () => {
+      console.log('==================================================');
+      console.log(`🚀 SERVIDOR REST CORRIENDO EN PUERTO: ${PORT}`);
+      console.log(`📝 DOCUMENTACIÓN INTERACTIVA (SWAGGER): http://localhost:${PORT}/api-docs`);
+      console.log('==================================================');
+    });
+  } catch (err) {
+    console.error('\x1b[31m✖ Error crítico al iniciar servidor: No se pudo conectar a MySQL.\x1b[0m');
+    console.error('\x1b[33mDetalles:\x1b[0m', err.message);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 module.exports = app;

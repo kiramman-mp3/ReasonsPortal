@@ -14,8 +14,7 @@ router.post(
     body('username')
       .trim()
       .notEmpty().withMessage('El usuario es requerido.')
-      .isString().withMessage('El usuario debe ser una cadena de texto.')
-      .escape(),
+      .isString().withMessage('El usuario debe ser una cadena de texto.'),
     body('password')
       .notEmpty().withMessage('La contraseña es requerida.')
   ],

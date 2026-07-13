@@ -15,23 +15,20 @@ router.post(
   '/',
   authMiddleware,
   upload.single('image'), // Primero procesar Multer para subir la foto del proyecto
+  upload.checkImageSignature, // Validar firma de archivo real (Magic Bytes)
   [
     body('title')
       .trim()
-      .notEmpty().withMessage('El título del proyecto es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El título del proyecto es requerido.'),
     body('description')
       .trim()
-      .notEmpty().withMessage('La descripción es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La descripción es requerida.'),
     body('objectives')
       .trim()
-      .notEmpty().withMessage('Los objetivos son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los objetivos son requeridos.'),
     body('results')
       .trim()
-      .notEmpty().withMessage('Los resultados son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los resultados son requeridos.'),
     body('researcher_ids')
       .optional()
       .custom(val => {
@@ -56,23 +53,20 @@ router.put(
   '/:id',
   authMiddleware,
   upload.single('image'),
+  upload.checkImageSignature,
   [
     body('title')
       .trim()
-      .notEmpty().withMessage('El título del proyecto es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El título del proyecto es requerido.'),
     body('description')
       .trim()
-      .notEmpty().withMessage('La descripción es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La descripción es requerida.'),
     body('objectives')
       .trim()
-      .notEmpty().withMessage('Los objetivos son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los objetivos son requeridos.'),
     body('results')
       .trim()
-      .notEmpty().withMessage('Los resultados son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los resultados son requeridos.'),
     body('researcher_ids')
       .optional()
       .custom(val => {

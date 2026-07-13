@@ -15,23 +15,21 @@ router.post(
   '/',
   authMiddleware,
   upload.single('photo'), // Primero se procesa Multer para poblar req.body y req.file
+  upload.checkImageSignature, // Validar firma de archivo real (Magic Bytes)
   [
     body('names')
       .trim()
-      .notEmpty().withMessage('Los nombres y apellidos son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los nombres y apellidos son requeridos.'),
     body('institutional_email')
       .trim()
       .isEmail().withMessage('Debe ingresar un correo institucional válido.')
       .normalizeEmail(),
     body('bio')
       .trim()
-      .notEmpty().withMessage('La biografía profesional es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La biografía profesional es requerida.'),
     body('position')
       .trim()
-      .notEmpty().withMessage('La posición en el grupo es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La posición en el grupo es requerida.'),
     body('orcid_link')
       .optional({ checkFalsy: true })
       .trim()
@@ -62,23 +60,21 @@ router.put(
   '/:id',
   authMiddleware,
   upload.single('photo'),
+  upload.checkImageSignature,
   [
     body('names')
       .trim()
-      .notEmpty().withMessage('Los nombres y apellidos son requeridos.')
-      .escape(),
+      .notEmpty().withMessage('Los nombres y apellidos son requeridos.'),
     body('institutional_email')
       .trim()
       .isEmail().withMessage('Debe ingresar un correo institucional válido.')
       .normalizeEmail(),
     body('bio')
       .trim()
-      .notEmpty().withMessage('La biografía profesional es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La biografía profesional es requerida.'),
     body('position')
       .trim()
-      .notEmpty().withMessage('La posición en el grupo es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La posición en el grupo es requerida.'),
     body('orcid_link')
       .optional({ checkFalsy: true })
       .trim()

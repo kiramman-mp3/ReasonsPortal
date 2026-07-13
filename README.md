@@ -420,7 +420,7 @@ El esquema relacional está definido completamente en [`docs/database_schema.sql
 
 | Nombre | Commits |
 |---|---|
-| Johan Rodríguez | 27 |
+| Johan Rodríguez | 35 |
 
 ---
 

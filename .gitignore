@@ -52,14 +52,6 @@ node_modules/
 .settings/
 
 # -------------------------------------------------------------------------
-# 📂 BACKEND: CONTROL DE ARCHIVOS Y MULTIMEDIA SUBIDOS
-# -------------------------------------------------------------------------
-# Ignorar las cargas de archivos en tiempo de ejecución (fotos de investigadores y portadas)
-# El script "npm run db:seed" las recrea automáticamente para desarrollo.
-/backend/uploads/*
-!/backend/uploads/.gitkeep
-
-# -------------------------------------------------------------------------
 # 🎨 FRONTEND: COMPILACIÓN Y CACHÉS DE ANGULAR
 # -------------------------------------------------------------------------
 /frontend/.angular/

@@ -2,8 +2,8 @@
 -- Nombre de la Base de Datos: reasons_db
 -- Creado para: Portal Web Institucional del Grupo de Investigación REASONS (UTA)
 
-CREATE DATABASE IF NOT EXISTS reasons_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE reasons_db;
+-- CREATE DATABASE IF NOT EXISTS reasons_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE reasons_db;
 
 -- 1. Configuración general administrable del portal
 CREATE TABLE IF NOT EXISTS site_settings (

@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ConfigService } from '../../core/services/config.service';
 
@@ -91,6 +91,7 @@ import { ConfigService } from '../../core/services/config.service';
 export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   config = inject(ConfigService);
  
@@ -108,7 +109,15 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.auth.isAuthenticated()) {
       this.router.navigate(['/admin/dashboard']);
+      return;
     }
+
+    // Verificar si redirigió por expiración de sesión
+    this.route.queryParams.subscribe(params => {
+      if (params['expired'] === 'true') {
+        this.errorMessage.set('Su sesión ha expirado por inactividad. Por favor, inicie sesión nuevamente.');
+      }
+    });
   }
 
   isFieldInvalid(fieldName: string): boolean {

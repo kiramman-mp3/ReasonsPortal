@@ -17,28 +17,22 @@ router.put(
   [
     body('group_name')
       .trim()
-      .notEmpty().withMessage('El nombre del grupo es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El nombre del grupo es requerido.'),
     body('institution')
       .trim()
-      .notEmpty().withMessage('La institución es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La institución es requerida.'),
     body('description')
       .trim()
-      .notEmpty().withMessage('La descripción es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La descripción es requerida.'),
     body('objective_general')
       .trim()
-      .notEmpty().withMessage('El objetivo general es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El objetivo general es requerido.'),
     body('mission')
       .trim()
-      .notEmpty().withMessage('La misión es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La misión es requerida.'),
     body('vision')
       .trim()
-      .notEmpty().withMessage('La visión es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La visión es requerida.'),
     body('primary_color')
       .trim()
       .isHexColor().withMessage('El color primario debe ser un código HEX válido.'),
@@ -50,12 +44,10 @@ router.put(
       .isHexColor().withMessage('El color de realce debe ser un código HEX válido.'),
     body('contact_address')
       .trim()
-      .notEmpty().withMessage('La dirección de contacto es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La dirección de contacto es requerida.'),
     body('contact_location')
       .trim()
-      .notEmpty().withMessage('La ubicación es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La ubicación es requerida.'),
     body('contact_email')
       .trim()
       .isEmail().withMessage('Debe ingresar un correo de contacto válido.')

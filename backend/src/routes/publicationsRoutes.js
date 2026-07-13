@@ -19,16 +19,13 @@ router.post(
   [
     body('title')
       .trim()
-      .notEmpty().withMessage('El título del artículo es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El título del artículo es requerido.'),
     body('abstract')
       .trim()
-      .notEmpty().withMessage('El resumen (abstract) es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El resumen (abstract) es requerido.'),
     body('citation')
       .trim()
-      .notEmpty().withMessage('La cita del artículo (APA/IEEE/etc.) es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La cita del artículo (APA/IEEE/etc.) es requerida.'),
     body('doi_link')
       .optional({ checkFalsy: true })
       .trim()
@@ -60,16 +57,13 @@ router.put(
   [
     body('title')
       .trim()
-      .notEmpty().withMessage('El título del artículo es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El título del artículo es requerido.'),
     body('abstract')
       .trim()
-      .notEmpty().withMessage('El resumen (abstract) es requerido.')
-      .escape(),
+      .notEmpty().withMessage('El resumen (abstract) es requerido.'),
     body('citation')
       .trim()
-      .notEmpty().withMessage('La cita del artículo (APA/IEEE/etc.) es requerida.')
-      .escape(),
+      .notEmpty().withMessage('La cita del artículo (APA/IEEE/etc.) es requerida.'),
     body('doi_link')
       .optional({ checkFalsy: true })
       .trim()

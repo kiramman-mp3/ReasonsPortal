@@ -16,8 +16,7 @@ router.post(
       .trim()
       .notEmpty().withMessage('Los nombres y apellidos son requeridos.')
       .isString().withMessage('Los nombres deben ser una cadena de texto.')
-      .isLength({ max: 150 }).withMessage('Los nombres no deben exceder los 150 caracteres.')
-      .escape(),
+      .isLength({ max: 150 }).withMessage('Los nombres no deben exceder los 150 caracteres.'),
     body('email')
       .trim()
       .notEmpty().withMessage('El correo electrónico es requerido.')
@@ -26,13 +25,11 @@ router.post(
     body('subject')
       .trim()
       .notEmpty().withMessage('El asunto es requerido.')
-      .isLength({ max: 200 }).withMessage('El asunto no debe exceder los 200 caracteres.')
-      .escape(),
+      .isLength({ max: 200 }).withMessage('El asunto no debe exceder los 200 caracteres.'),
     body('message')
       .trim()
       .notEmpty().withMessage('El mensaje es requerido.')
       .isLength({ min: 10, max: 2000 }).withMessage('El mensaje debe tener entre 10 y 2000 caracteres.')
-      .escape()
   ],
   validateResult,
   contactController.sendMessage

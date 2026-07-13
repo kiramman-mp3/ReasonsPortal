@@ -1,167 +1,462 @@
-# Portal Web Institucional Full-Stack - REASONS
+# 🔬 Portal Web Institucional — REASONS UTA
 
-> Plataforma web autoadministrable, segura y con diseño responsivo premium, diseñada para el grupo de investigación **REASONS** (Research in Engineering and Advanced Sustainable Operations, Nature, and Society) de la **Universidad Técnica de Ambato** y desarrollada íntegramente por mí como proyecto de portafolio técnico de alto impacto.
+> Plataforma web full-stack, autoadministrable y de arquitectura desacoplada para el grupo de investigación **REASONS** (*Research in Engineering and Advanced Sustainable Operations, Nature, and Society*) de la **Universidad Técnica de Ambato**.
 
 [![Angular](https://img.shields.io/badge/Angular-21.x-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-24.x-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.19.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnels-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://www.cloudflare.com/products/tunnel/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Swagger](https://img.shields.io/badge/OpenAPI%203.0-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
-
-Este sistema ha sido diseñado e implementando una arquitectura desacoplada SPA, compresión nativa de archivos en el cliente mediante Canvas, blindaje de seguridad activo contra vulnerabilidades comunes de la OWASP y un motor dinámico de plantillas en tiempo real basado en variables CSS controladas desde base de datos.
-
----
-
-## 💎 Aspectos Destacados de la Arquitectura
-
-### 🎨 1. Motor de Colores Dinámicos en Tiempo Real (CSS Variables)
-En lugar de depender de estilos estáticos o compilaciones rígidas, la plataforma cuenta con una **gestión de apariencia autoadministrable**:
-*   Los administradores pueden configurar los colores hexadecimales corporativos (primario, secundario y acento) directamente desde su panel de control.
-*   En el arranque del cliente (`APP_INITIALIZER`), el frontend consulta la API e inyecta dinámicamente estas variables en el `:root` del DOM (`var(--color-primary)`, etc.).
-*   El compilador de Tailwind CSS (`v4`) se vincula directamente a estas variables CSS, lo que permite que todo el portal cambie su paleta cromática de inmediato en caliente y **sin necesidad de recompilar la aplicación o recargar la página**.
-
-### ⚡ 2. Compresión de Imágenes del Lado del Cliente (Canvas API)
-Para optimizar el uso de ancho de banda y garantizar subidas rápidas incluso en conexiones móviles limitadas, desarrollamos un optimizador nativo sin dependencias externas utilizando la **API de Canvas de HTML5** ([`image-compressor.ts`](file:///c:/Users/johan/OneDrive/Documentos/Universidad/Web%20y%20Moviles/Ape03/frontend/src/app/core/utils/image-compressor.ts)):
-*   Las imágenes seleccionadas para subida (fotos 5x5 cm de investigadores, banners de proyectos y portadas de revistas) son interceptadas en el navegador antes de ser enviadas a la red.
-*   Se dibujan asíncronamente en un lienzo `<canvas>` invisible recalculando proporcionalmente su resolución (máximo de 800x800 px para perfiles o 1200x800 px para banners) y exportándolas a un `Blob` comprimido a calidad del `75%-85%` en formato JPEG o PNG transparente.
-*   Esto reduce drásticamente el peso de los archivos (ej. de una imagen pesada de **`15 MB`** a un archivo ligero y súper nítido de **`300 KB`**), previniendo para siempre el error *File too large* en el backend y acelerando la subida en un `95%`.
-
-### 🛡️ 3. Ecosistema de Seguridad Activa Multicapa
-Diseñado con estrictos principios de programación defensiva para asegurar la integridad de la base de datos relacional y las sesiones del usuario:
-*   **Gestión de Sesión y Guardianes**: Interceptores HTTP funcionales de Angular que adjuntan automáticamente el token de sesión (`Bearer <token>`) en peticiones de escritura y guardianes de ruta (`authGuard`) que previenen accesos no autorizados al dashboard.
-*   **Helmet y CORS**: Cabeceras HTTP estrictas para proteger contra inyecciones XSS, Clickjacking, sniffing de MIME y control estricto de orígenes cruzados.
-*   **Limitador de Tasa (Rate Limiting)**: Control de tráfico en ventanas de tiempo (`express-rate-limit`) aplicado a los endpoints de inicio de sesión y formulario de contacto para mitigar ataques de fuerza bruta y spam.
-*   **Sanitización y Validación Anti-XSS**: Limpieza estricta de todos los campos del cuerpo de la petición (`express-validator`), escapando caracteres especiales para neutralizar inyecciones de código HTML/JS y SQL.
-*   **Encriptación Criptográfica**: Las contraseñas administrativas son procesadas y almacenadas utilizando `bcrypt` con un factor de coste de 12 rondas de salting.
-
-### 🌐 4. Exposición con un Solo Túnel de Cloudflare
-Para facilitar las pruebas y demostraciones en vivo, integramos un sistema de enrutamiento proxy:
-*   En lugar de abrir múltiples túneles Cloudflare simultáneos y lidiar con bloqueos de CORS, configuramos un **proxy de desarrollo** en Angular ([`proxy.conf.json`](file:///c:/Users/johan/OneDrive/Documentos/Universidad/Web%20y%20Moviles/Ape03/frontend/proxy.conf.json)).
-*   Todas las rutas de datos y multimedia (`/api/*` y `/uploads/*`) son relativas. Al abrir un solo túnel apuntando al puerto de Angular (`4200`), Cloudflare genera **una única URL pública y segura con certificado SSL** que sirve la interfaz visual y redirecciona de forma interna e invisible las llamadas al puerto de Express (`3000`), evitando bloqueos.
+[![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)](https://railway.app/)
 
 ---
 
-## 📚 Documentación Completa
+## 📋 Descripción
 
-Para facilitar la comprensión, el desarrollo y la administración del proyecto, se ha compilado una biblioteca de guías y manuales detallados en la carpeta [`docs/`](docs/):
+El **Portal REASONS** es una solución web completa que permite al grupo de investigación gestionar de forma autónoma toda su presencia institucional en línea: investigadores, proyectos, publicaciones científicas, configuración visual corporativa y un buzón de contacto, todo desde un panel de administración protegido por autenticación JWT.
 
-*   📘 **[Manual del Usuario](docs/user_manual.md)**: Guía paso a paso para que directores y administradores gestionen el contenido del portal (carrusel, investigadores, proyectos, publicaciones, colores corporativos y imágenes de inicio) sin tocar código.
-*   💻 **[Guía del Desarrollador](docs/developer_guide.md)**: Detalle técnico de la arquitectura, variables dinámicas CSS, reactividad con Angular Signals, e interceptores/guardianes del flujo.
-*   ⚙️ **[Manual de Operaciones y Ejecución](docs/operations_guide.md)**: Instrucciones detalladas de despliegue, configuración de variables de entorno `.env`, inicialización de bases de datos, semillado y resolución de problemas de puertos o MySQL.
-*   🌐 **[Especificación de la API REST](docs/api_endpoints.md)**: Detalle completo de los endpoints, payloads de entrada/salida y respuestas JSON de la API.
-*   🛡️ **[Medidas de Seguridad](docs/security_measures.md)**: Documentación de las capas de protección implementadas contra las vulnerabilidades más comunes de OWASP.
-*   📐 **[Ecosistema Tecnológico](docs/technologies_used.md)**: Ficha técnica detallada con todas las herramientas, lenguajes y librerías que componen la solución.
-*   🗃️ **[Esquema de Base de Datos (DDL)](docs/database_schema.sql)**: Código de creación de tablas relacionales InnoDB y datos semilla de MySQL.
+| Aspecto | Detalle |
+|---|---|
+| 🎯 **Propósito** | Vitrina institucional y panel CMS autoadministrable para grupo de investigación |
+| 👥 **Público** | Docentes, investigadores y visitantes de la UTA |
+| 🏛️ **Institución** | Universidad Técnica de Ambato — Ecuador |
+| 🔗 **Demo en vivo** | [reasonsresearch.vercel.app](https://reasonsresearch.vercel.app) |
+
+---
+
+## ✨ Características Principales
+
+- 🏠 **Página de inicio dinámica** con carrusel de imágenes (Hero Slider) completamente administrable
+- 👤 **Gestión de investigadores** con foto de perfil, ORCID y redes sociales
+- 🧪 **Catálogo de proyectos de investigación** con imágenes, descripción y equipo asociado
+- 📄 **Publicaciones científicas** con DOI, resumen (abstract), citación y portada de revista
+- 📬 **Buzón de contacto** con gestión de estados (`sin leer`, `leído`, `respondido`)
+- 🎨 **Motor de colores corporativos en tiempo real** — cambio de paleta desde el panel sin recompilar
+- 🖼️ **Compresor de imágenes en cliente** (Canvas API) — reduce hasta 95% el peso antes del envío
+- 🔐 **Autenticación JWT** con guardianes de ruta y expiración automática de sesión
+- 🛡️ **Seguridad multicapa** — Helmet, CORS, Rate Limiting, bcrypt y validación anti-XSS
+- 📑 **Documentación interactiva** de la API con Swagger UI (`/api-docs`)
+- 📱 **Diseño 100% responsivo** con menús colapsables para móvil y tablet
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Frontend
+| Tecnología | Versión | Rol |
+|---|---|---|
+| Angular | 21.x | Framework SPA principal |
+| TypeScript | 5.9.x | Lenguaje de programación |
+| Tailwind CSS | 4.x | Sistema de estilos utilitario |
+| Angular Router | 21.x | Enrutamiento con lazy loading |
+| RxJS | 7.8.x | Manejo reactivo de streams y HTTP |
+
+### Backend
+| Tecnología | Versión | Rol |
+|---|---|---|
+| Node.js | 20+ | Runtime de JavaScript en servidor |
+| Express | 4.19.x | Framework HTTP REST |
+| MySQL2 | 3.9.x | Conector de base de datos |
+| JSON Web Token | 9.x | Autenticación stateless |
+| bcryptjs | 2.4.x | Hash criptográfico de contraseñas |
+| Multer | 1.4.x | Gestión de subida de archivos |
+| Helmet | 7.x | Cabeceras HTTP de seguridad |
+| express-rate-limit | 7.x | Limitación de tasa de peticiones |
+| express-validator | 7.x | Sanitización y validación de inputs |
+| Swagger (OpenAPI 3.0) | 6.x | Documentación interactiva de la API |
+
+### Base de Datos e Infraestructura
+| Tecnología | Uso |
+|---|---|
+| MySQL 8.0 | Base de datos relacional (InnoDB) |
+| Railway | Hosting del backend y MySQL en producción |
+| Vercel | Hosting y CDN del frontend Angular |
+| Neon | (Alternativa PostgreSQL en evaluación) |
+
+---
+
+## 🏗️ Arquitectura
+
+El proyecto implementa una arquitectura **desacoplada SPA + REST API**:
+
+```mermaid
+graph TD
+    subgraph "🌐 Internet (Producción)"
+        User(("👤 Usuario"))
+        Admin(("🔑 Administrador"))
+    end
+
+    subgraph "Vercel (CDN Global)"
+        FE["⚡ Angular 21 SPA<br/>reasonsresearch.vercel.app"]
+    end
+
+    subgraph "Railway (Backend)"
+        API["🚀 Express REST API<br/>/api/*"]
+        UPLOADS["📁 Archivos Estáticos<br/>/uploads/*"]
+        DB[("🗄️ MySQL 8<br/>railway DB")]
+    end
+
+    User -->|"HTTPS"| FE
+    Admin -->|"HTTPS + JWT"| FE
+    FE -->|"GET /api/..."| API
+    FE -->|"POST /PUT /DELETE + Bearer Token"| API
+    API -->|"SQL Queries"| DB
+    API -->|"Leer / Escribir"| UPLOADS
+    FE -->|"Imágenes"| UPLOADS
+```
+
+### Flujo de Autenticación
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant FE as Angular SPA
+    participant API as Express API
+    participant DB as MySQL
+
+    Admin->>FE: POST /admin/login (user + pass)
+    FE->>API: POST /api/auth/login
+    API->>DB: SELECT admin WHERE username = ?
+    DB-->>API: Admin row
+    API->>API: bcrypt.compare(password, hash)
+    API-->>FE: { token: "JWT..." }
+    FE->>FE: Guarda JWT en localStorage
+    FE->>FE: AuthGuard desbloquea rutas /admin/*
+    Admin->>FE: Navega al Dashboard
+    FE->>API: GET /api/... + Authorization: Bearer JWT
+    API->>API: jwt.verify(token, JWT_SECRET)
+    API-->>FE: Datos protegidos
+```
 
 ---
 
 ## 📁 Estructura del Repositorio
 
 ```
-├── docs/                      # Biblioteca de documentación técnica y manuales
-│   ├── user_manual.md         # Manual de administración para usuarios finales
-│   ├── developer_guide.md     # Guía arquitectónica y técnica para programadores
-│   ├── operations_guide.md    # Manual de instalación, despliegue y base de datos
-│   ├── database_schema.sql    # DDL Relacional de InnoDB y datos semilla
-│   ├── api_endpoints.md       # Mapa de peticiones y respuestas de la API REST
-│   ├── security_measures.md   # Capas de blindaje y sanitización activa
-│   └── technologies_used.md   # Especificación de tecnologías y versiones usadas
-├── utils/                     # Scripts y utilidades de automatización
-│   ├── db-init.js             # Creador físico de la base de datos y tablas SQL
-│   ├── db-seed.js             # Generador de imágenes base64 y datos institucionales
-│   ├── db-clean.js            # Limpiador atómico (TRUNCATE) y re-semillero seguro
-│   ├── create-admin.js        # Registro interactivo por consola de administradores
-│   └── start-dev.js           # Lanzador concurrentemente de Express + Angular
-├── backend/                   # Código de la API REST (Express y Node.js)
+portal-web-reasons-uta/
+│
+├── .env                        # Variables de entorno (NO subir a Git)
+├── .env.example                # Plantilla de variables de entorno
+├── package.json                # Scripts raíz del monorepo
+├── vercel.json                 # Configuración SPA fallback para Vercel
+│
+├── backend/                    # 🚀 API REST (Express + Node.js)
 │   ├── src/
-│   │   ├── config/            # Pools de MySQL y especificaciones de Swagger UI
-│   │   ├── controllers/       # Controladores modulares con lógica de negocio
-│   │   ├── middleware/        # Validaciones fuertes, límites de tasa y JWT
-│   │   └── routes/            # Ruteadores de endpoints de la API
-│   └── uploads/               # Directorio físico para archivos multimedia
-└── frontend/                  # Código del Cliente SPA en Angular 21 y Tailwind
-    ├── src/app/
-    │   ├── core/              # Servicios de sesión, guardianes e image-compressor
-    │   ├── shared/            # Layouts públicos y sidebar de administración
-    │   └── features/          # Componentes del Home, login y formularios CRUD
-    └── proxy.conf.json        # Proxy para enrutamiento unificado de la API
+│   │   ├── app.js              # Punto de entrada del servidor
+│   │   ├── config/
+│   │   │   ├── db.js           # Pool de conexiones MySQL2
+│   │   │   └── swagger.js      # Configuración OpenAPI 3.0
+│   │   ├── controllers/        # Lógica de negocio por módulo
+│   │   ├── middleware/         # JWT, Rate Limiting, Multer, Validaciones
+│   │   └── routes/             # Enrutadores REST por recurso
+│   │       ├── authRoutes.js
+│   │       ├── settingsRoutes.js
+│   │       ├── researchersRoutes.js
+│   │       ├── projectsRoutes.js
+│   │       ├── publicationsRoutes.js
+│   │       └── contactRoutes.js
+│   └── uploads/                # Almacenamiento local de archivos multimedia
+│
+├── frontend/                   # ⚡ SPA Angular 21 + Tailwind CSS 4
+│   ├── src/app/
+│   │   ├── core/               # Servicios globales, guards, interceptores, utils
+│   │   ├── shared/             # Layouts reutilizables (público y admin)
+│   │   └── features/           # Módulos de funcionalidad por página
+│   │       ├── home/           # Página de inicio con Hero slider
+│   │       ├── researchers/    # Directorio de investigadores
+│   │       ├── projects/       # Catálogo de proyectos
+│   │       ├── publications/   # Publicaciones científicas
+│   │       ├── contact/        # Formulario de contacto público
+│   │       └── admin/          # Panel de administración (protegido)
+│   ├── proxy.conf.json         # Proxy de desarrollo (API forwarding)
+│   └── vercel.json             # SPA routing fallback
+│
+├── utils/                      # 🔧 Scripts de automatización
+│   ├── db-init.js              # Crear base de datos y tablas
+│   ├── db-seed.js              # Insertar datos semilla institucionales
+│   ├── db-clean.js             # Limpiar y re-sembrar datos
+│   ├── db-update-home-images.js # Actualizar imágenes de la página de inicio
+│   ├── create-admin.js         # Crear usuario administrador interactivo
+│   └── start-dev.js            # Arrancar frontend + backend en paralelo
+│
+└── docs/                       # 📚 Documentación técnica completa
+    ├── api_endpoints.md         # Catálogo de endpoints REST
+    ├── database_schema.sql      # DDL relacional (InnoDB)
+    ├── developer_guide.md       # Guía técnica para desarrolladores
+    ├── operations_guide.md      # Manual de instalación y despliegue
+    ├── security_measures.md     # Medidas de seguridad implementadas
+    ├── technologies_used.md     # Ecosistema tecnológico detallado
+    └── user_manual.md           # Manual de uso para administradores
 ```
 
 ---
 
+## ⚙️ Requisitos Previos
 
-## 🚀 Guía de Instalación y Ejecución
+| Herramienta | Versión mínima | Uso |
+|---|---|---|
+| [Node.js](https://nodejs.org/) | v20.x LTS | Runtime del backend y CLI de Angular |
+| [npm](https://www.npmjs.com/) | v10.x | Gestor de paquetes |
+| [MySQL](https://www.mysql.com/) | 8.0 | Base de datos relacional |
+| [Angular CLI](https://angular.dev/tools/cli) | v21.x | Desarrollo del frontend (opcional, instalado localmente) |
 
-### Requisitos Previos
-*   [Node.js](https://nodejs.org/) (v20+ recomendado)
-*   [MySQL](https://www.mysql.com/) server activo localmente
-*   [Cloudflare cloudflared CLI](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) (si deseas exponerlo a internet)
+---
 
-### 1. Configurar Entorno (`.env`)
-Clona el repositorio y crea un archivo de configuración `.env` en la raíz del proyecto:
+## 🚀 Instalación y Ejecución Local
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/kiramman-mp3/portal-web-reasons-uta.git
+cd portal-web-reasons-uta
+```
+
+### 2. Configurar variables de entorno
+
 ```bash
 cp .env.example .env
 ```
-Abre el archivo `.env` recién creado y configura tus datos de conexión a MySQL local:
+
+Edita el archivo `.env` con tus datos de conexión a MySQL:
+
 ```ini
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=tu_usuario
+DB_USER=root
 DB_PASSWORD=tu_contraseña
 DB_NAME=reasons_db
+
+PORT=3000
+JWT_SECRET=tu_clave_secreta_super_segura
+
+NODE_ENV=development
 ```
 
-### 2. Instalar Dependencias
-Instala todas las dependencias del proyecto (Raíz, `/backend` y `/frontend`) de manera recursiva en un solo comando:
+### 3. Instalar todas las dependencias
+
+Un solo comando instala las dependencias de la raíz, el backend y el frontend:
+
 ```bash
 npm run install:all
 ```
 
-### 3. Inicializar Base de Datos y Semillas
-Crea las tablas en tu servidor MySQL local y puebla el portal con datos semilla e imágenes predeterminadas:
+### 4. Inicializar la base de datos
+
 ```bash
-# Crear base de datos y tablas estructuradas relacionales
+# Crear la base de datos y todas las tablas relacionales
 npm run db:init
 
-# Insertar contenido institucional inicial e imágenes por defecto
+# Insertar datos semilla institucionales e imágenes predeterminadas
 npm run db:seed
 ```
 
-### 4. Iniciar Servidores de Desarrollo
-Arranca la API de Express (puerto 3000) y la SPA de Angular con Tailwind (puerto 4200) de manera concurrente con un único script:
+### 5. Crear el usuario administrador
+
+```bash
+npm run db:admin
+```
+
+Sigue las instrucciones en consola para definir usuario y contraseña.
+
+### 6. Iniciar los servidores de desarrollo
+
 ```bash
 npm run start:dev
 ```
 
-### 5. Exponer a Internet (Túnel Único)
-Para que cualquier dispositivo externo pueda acceder a tu portal completo de forma segura (Frontend + Backend + Fotos):
-```bash
-cloudflared tunnel --url http://localhost:4200
-```
-¡Abre el enlace público que te devuelva Cloudflare (ej. `https://xxxx.trycloudflare.com`) en tu celular o tablet y navega sin límites!
+Esto levanta de forma concurrente:
+- 🚀 **Backend** → `http://localhost:3000`
+- ⚡ **Frontend** → `http://localhost:4200`
+- 📑 **Swagger UI** → `http://localhost:3000/api-docs`
 
 ---
 
-## 🎨 Paleta Visual Premium y UX
+## 🌍 Variables de Entorno
 
-El portal cuenta con un diseño de UI/UX sumamente pulido y premium:
-*   **Tipografía de Portafolio**: Google Font **Outfit** como fuente primaria para títulos (aportando impacto tecnológico e ingeniería limpia) e **Inter** para textos (máxima legibilidad).
-*   **Micro-animaciones de Estado**: Hover cards con escalados suaves, transiciones fluidas de menús y efectos dinámicos de gradientes interactivos.
-*   **Bordes de Alta Gama y Sombras**: Sombras flotantes premium (`box-shadow`), tarjetas con bordes redondeados y efectos glassmorphic con blur dinámico.
-*   **Diseño 100% Responsivo**: Adaptabilidad nativa en grids para pantallas Retina, notebooks, tablets y teléfonos mediante menús drawer colapsables.
+Todas las variables se definen en el archivo `.env` en la raíz del proyecto. Consulta [`.env.example`](.env.example) como referencia.
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `DB_HOST` | Host del servidor MySQL | `localhost` |
+| `DB_PORT` | Puerto de MySQL | `3306` |
+| `DB_USER` | Usuario de MySQL | `root` |
+| `DB_PASSWORD` | Contraseña de MySQL | `tu_contraseña` |
+| `DB_NAME` | Nombre de la base de datos | `reasons_db` |
+| `PORT` | Puerto del servidor Express | `3000` |
+| `JWT_SECRET` | Clave secreta para firmar los tokens JWT | `clave_larga_y_aleatoria` |
+| `NODE_ENV` | Entorno de ejecución | `development` / `production` |
+
+> [!CAUTION]
+> **Nunca subas el archivo `.env` al repositorio.** Está incluido en el `.gitignore`. La variable `JWT_SECRET` es obligatoria; el servidor se negará a iniciar si no está configurada.
 
 ---
 
-## 🔑 Credenciales Administrativas por Defecto
-*   **Panel de Login**: `http://localhost:4200/admin/login` (o en tu enlace de Cloudflare)
-*   **Usuario**: `admin`
-*   **Contraseña**: `AdminReasons2026!`
-*   **Buzón de Pruebas OpenAPI (Swagger UI)**: `http://localhost:3000/api-docs` (sandbox interactivo de la API)
+## 📡 API REST — Resumen de Endpoints
+
+La API expone documentación interactiva completa en `/api-docs` (Swagger UI). Los endpoints `GET` son públicos; los de escritura requieren `Authorization: Bearer <token>`.
+
+| Módulo | Método | Ruta | Acceso |
+|---|---|---|---|
+| Auth | `POST` | `/api/auth/login` | Público |
+| Configuración | `GET` | `/api/settings` | Público |
+| Configuración | `PUT` | `/api/settings` | 🔐 JWT |
+| Configuración | `POST` | `/api/settings/logo` | 🔐 JWT |
+| Slides (Hero) | `POST/PUT/DELETE` | `/api/settings/slides/:id` | 🔐 JWT |
+| Investigadores | `GET` | `/api/researchers` | Público |
+| Investigadores | `POST/PUT/DELETE` | `/api/researchers/:id` | 🔐 JWT |
+| Proyectos | `GET` | `/api/projects` | Público |
+| Proyectos | `POST/PUT/DELETE` | `/api/projects/:id` | 🔐 JWT |
+| Publicaciones | `GET` | `/api/publications` | Público |
+| Publicaciones | `POST/PUT/DELETE` | `/api/publications/:id` | 🔐 JWT |
+| Contacto | `POST` | `/api/contact` | Público (Rate Limited) |
+| Contacto | `GET/PUT/DELETE` | `/api/contact/:id` | 🔐 JWT |
+
+> Para la especificación completa, consulta [`docs/api_endpoints.md`](docs/api_endpoints.md).
+
+---
+
+## 📜 Scripts Disponibles
+
+### Raíz del monorepo (`package.json`)
+
+| Script | Comando | Descripción |
+|---|---|---|
+| `install:all` | `npm run install:all` | Instala dependencias en raíz, backend y frontend |
+| `start:dev` | `npm run start:dev` | Arranca backend y frontend en paralelo |
+| `db:init` | `npm run db:init` | Crea la base de datos y las tablas SQL |
+| `db:seed` | `npm run db:seed` | Inserta datos semilla institucionales |
+| `db:clean` | `npm run db:clean` | Limpia todas las tablas y re-siembra |
+| `db:admin` | `npm run db:admin` | Crea un usuario administrador de forma interactiva |
+
+### Backend (`backend/`)
+
+| Script | Descripción |
+|---|---|
+| `npm start` | Inicia el servidor Express en producción |
+| `npm run dev` | Inicia el servidor con hot-reload (nodemon) |
+
+### Frontend (`frontend/`)
+
+| Script | Descripción |
+|---|---|
+| `npm start` | Inicia el servidor de desarrollo de Angular (`ng serve`) |
+| `npm run build` | Genera el bundle de producción en `dist/` |
+| `npm test` | Ejecuta las pruebas unitarias (Karma) |
+| `npm run watch` | Compila en modo watch para desarrollo |
+
+---
+
+## 🔐 Acceso al Panel de Administración
+
+Una vez levantado el servidor localmente:
+
+| Recurso | URL |
+|---|---|
+| Portal público | `http://localhost:4200` |
+| Panel de administración | `http://localhost:4200/admin/login` |
+| Documentación Swagger | `http://localhost:3000/api-docs` |
+
+> [!IMPORTANT]
+> Las credenciales por defecto se crean con el script `npm run db:admin`. Si usaste `npm run db:seed`, consulta la documentación de semillas para el usuario de demo.
+
+---
+
+## 🗺️ Rutas Públicas del Portal
+
+| Ruta | Descripción |
+|---|---|
+| `/` | Página de inicio con Hero slider |
+| `/equipo` | Directorio de investigadores |
+| `/proyectos` | Catálogo de proyectos de investigación |
+| `/publicaciones` | Publicaciones y artículos científicos |
+| `/contacto` | Formulario de contacto |
+
+---
+
+## 🛡️ Seguridad
+
+El sistema implementa una estrategia de defensa en profundidad:
+
+- **JWT con expiración**: Tokens con tiempo de vida limitado; el cliente detecta tokens expirados y redirige al login automáticamente.
+- **bcrypt (12 rondas)**: Hash criptográfico de contraseñas con factor de coste alto.
+- **Helmet**: Cabeceras HTTP de seguridad (XSS Protection, MIME sniffing, Clickjacking).
+- **CORS estricto**: Control de orígenes cruzados permitidos.
+- **Rate Limiting**: Protección en endpoints de login y contacto contra fuerza bruta y spam.
+- **express-validator**: Sanitización y validación estricta de todos los campos entrantes.
+- **Magic bytes validation**: Verificación del tipo real de archivo subido (no solo extensión).
+
+> Para detalles completos, consulta [`docs/security_measures.md`](docs/security_measures.md).
+
+---
+
+## 🗃️ Base de Datos
+
+El esquema relacional está definido completamente en [`docs/database_schema.sql`](docs/database_schema.sql).
+
+**Tablas principales:**
+- `admin_users` — Usuarios con acceso al panel de administración
+- `site_settings` — Configuración global y colores corporativos del portal
+- `hero_slides` — Diapositivas del carrusel de la página de inicio
+- `research_lines` — Líneas de investigación del grupo
+- `specific_objectives` — Objetivos específicos institucionales
+- `researchers` — Perfiles de investigadores
+- `projects` — Proyectos de investigación
+- `project_researchers` — Relación N:M entre proyectos e investigadores
+- `publications` — Artículos y publicaciones científicas
+- `publication_authors` — Relación N:M entre publicaciones e investigadores
+- `contact_messages` — Buzón de mensajes del formulario de contacto
+
+---
+
+## 📚 Documentación Completa
+
+| Documento | Descripción |
+|---|---|
+| 📘 [Manual del Usuario](docs/user_manual.md) | Guía paso a paso para administradores del portal |
+| 💻 [Guía del Desarrollador](docs/developer_guide.md) | Arquitectura, Angular Signals, CSS Variables y más |
+| ⚙️ [Manual de Operaciones](docs/operations_guide.md) | Instalación, despliegue y resolución de problemas |
+| 🌐 [API REST — Endpoints](docs/api_endpoints.md) | Catálogo completo de peticiones y respuestas |
+| 🛡️ [Medidas de Seguridad](docs/security_measures.md) | Capas de protección contra vulnerabilidades OWASP |
+| 📐 [Ecosistema Tecnológico](docs/technologies_used.md) | Detalle de todas las herramientas y versiones |
+| 🗃️ [Esquema de Base de Datos](docs/database_schema.sql) | DDL relacional InnoDB con datos semilla |
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Portal público con secciones de inicio, equipo, proyectos, publicaciones y contacto
+- [x] Panel de administración con autenticación JWT
+- [x] CRUD completo de investigadores, proyectos, publicaciones y mensajes
+- [x] Motor de colores corporativos dinámicos en tiempo real
+- [x] Compresor de imágenes en el cliente (Canvas API)
+- [x] Documentación interactiva Swagger UI
+- [x] Despliegue en producción (Vercel + Railway)
+- [ ] Soporte para múltiples idiomas (i18n — Español / Inglés)
+- [ ] Módulo de noticias y eventos del grupo
+- [ ] Notificaciones por email al recibir mensajes de contacto
+- [ ] Sistema de roles de usuario (superadmin / editor)
+- [ ] Exportación de publicaciones en formato BibTeX / RIS
+
+---
+
+## 👥 Contribuidores
+
+| Nombre | Commits |
+|---|---|
+| Johan Rodríguez | 27 |
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia **ISC**.
 
 ---
 
 ## 👤 Autor
-* **Desarrollo Full-Stack**: [Tu Nombre / GitHub Profile]
-* **Propósito**: Proyecto de Portafolio Profesional de Alto Impacto diseñado para el Grupo de Investigación **REASONS** (Universidad Técnica de Ambato).
+
+**Johan Rodríguez**
+- 🏛️ Universidad Técnica de Ambato — Ecuador
+- 📁 [github.com/kiramman-mp3](https://github.com/kiramman-mp3)

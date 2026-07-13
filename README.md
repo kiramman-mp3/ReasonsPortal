@@ -181,14 +181,8 @@ portal-web-reasons-uta/
 │   ├── create-admin.js         # Crear usuario administrador interactivo
 │   └── start-dev.js            # Arrancar frontend + backend en paralelo
 │
-└── docs/                       # 📚 Documentación técnica completa
-    ├── api_endpoints.md         # Catálogo de endpoints REST
-    ├── database_schema.sql      # DDL relacional (InnoDB)
-    ├── developer_guide.md       # Guía técnica para desarrolladores
-    ├── operations_guide.md      # Manual de instalación y despliegue
-    ├── security_measures.md     # Medidas de seguridad implementadas
-    ├── technologies_used.md     # Ecosistema tecnológico detallado
-    └── user_manual.md           # Manual de uso para administradores
+└── docs/                       # 📚 Documentación
+    └── database_schema.sql      # DDL relacional (InnoDB)
 ```
 
 ---
@@ -313,8 +307,6 @@ La API expone documentación interactiva completa en `/api-docs` (Swagger UI). L
 | Contacto | `POST` | `/api/contact` | Público (Rate Limited) |
 | Contacto | `GET/PUT/DELETE` | `/api/contact/:id` | 🔐 JWT |
 
-> Para la especificación completa, consulta [`docs/api_endpoints.md`](docs/api_endpoints.md).
-
 ---
 
 ## 📜 Scripts Disponibles
@@ -387,8 +379,6 @@ El sistema implementa una estrategia de defensa en profundidad:
 - **express-validator**: Sanitización y validación estricta de todos los campos entrantes.
 - **Magic bytes validation**: Verificación del tipo real de archivo subido (no solo extensión).
 
-> Para detalles completos, consulta [`docs/security_measures.md`](docs/security_measures.md).
-
 ---
 
 ## 🗃️ Base de Datos
@@ -410,20 +400,6 @@ El esquema relacional está definido completamente en [`docs/database_schema.sql
 
 ---
 
-## 📚 Documentación Completa
-
-| Documento | Descripción |
-|---|---|
-| 📘 [Manual del Usuario](docs/user_manual.md) | Guía paso a paso para administradores del portal |
-| 💻 [Guía del Desarrollador](docs/developer_guide.md) | Arquitectura, Angular Signals, CSS Variables y más |
-| ⚙️ [Manual de Operaciones](docs/operations_guide.md) | Instalación, despliegue y resolución de problemas |
-| 🌐 [API REST — Endpoints](docs/api_endpoints.md) | Catálogo completo de peticiones y respuestas |
-| 🛡️ [Medidas de Seguridad](docs/security_measures.md) | Capas de protección contra vulnerabilidades OWASP |
-| 📐 [Ecosistema Tecnológico](docs/technologies_used.md) | Detalle de todas las herramientas y versiones |
-| 🗃️ [Esquema de Base de Datos](docs/database_schema.sql) | DDL relacional InnoDB con datos semilla |
-
----
-
 ## 🗺️ Roadmap
 
 - [x] Portal público con secciones de inicio, equipo, proyectos, publicaciones y contacto
@@ -436,8 +412,6 @@ El esquema relacional está definido completamente en [`docs/database_schema.sql
 - [ ] Soporte para múltiples idiomas (i18n — Español / Inglés)
 - [ ] Módulo de noticias y eventos del grupo
 - [ ] Notificaciones por email al recibir mensajes de contacto
-- [ ] Sistema de roles de usuario (superadmin / editor)
-- [ ] Exportación de publicaciones en formato BibTeX / RIS
 
 ---
 
@@ -451,7 +425,7 @@ El esquema relacional está definido completamente en [`docs/database_schema.sql
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia **ISC**.
+Este proyecto está bajo la licencia **MIT**.
 
 ---
 

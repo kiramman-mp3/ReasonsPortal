@@ -71,7 +71,10 @@ const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '7d', // Guardar en caché del navegador por 7 días
+  immutable: true
+}));
 
 // 5. Exponer Documentación Interactiva Swagger (OpenAPI 3.0)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
